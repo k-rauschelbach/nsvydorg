@@ -4,7 +4,13 @@
       "Bash(dir /s /b \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\")",
       "Bash(npm install react-router-dom)",
       "Bash(npm install @fullcalendar/react @fullcalendar/daygrid @fullcalendar/google-calendar @fullcalendar/interaction --legacy-peer-deps)",
-      "Bash(npm install @fullcalendar/core --legacy-peer-deps)"
+      "Bash(npm install @fullcalendar/core --legacy-peer-deps)",
+      "Bash(powershell -Command \":*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\strip-bom.ps1\")",
+      "Bash(Remove-Item \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\strip-bom.ps1\")",
+      "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\strip-bom.ps1''\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scan-bom.ps1\")",
+      "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scan-bom.ps1''\")"
     ]
   }
 }

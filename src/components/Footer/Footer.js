@@ -1,4 +1,4 @@
-﻿// Footer.js -- site footer
+// Footer.js -- site footer
 
 import styles from './Footer.module.css';
 
