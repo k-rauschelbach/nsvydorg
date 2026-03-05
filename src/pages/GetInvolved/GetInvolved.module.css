@@ -1,0 +1,143 @@
+/* GetInvolved.module.css -- Get Involved page styles */
+
+/* Blue page header */
+.pageHeader {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.headerInner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-lg);
+}
+
+.pageHeader h1 {
+    font-size: var(--font-size-2xl);
+    margin: 0 0 var(--space-sm);
+}
+
+.pageHeader p {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    opacity: 0.9;
+}
+
+/* White section for the ways-to-help grid */
+.section {
+    background-color: var(--color-white);
+}
+
+/* Light gray section for the contact form */
+.contactSection {
+    background-color: var(--color-gray-100);
+}
+
+/* Shared inner container */
+.inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-3xl) var(--space-lg);
+}
+
+.inner h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-lg);
+}
+
+.inner > p {
+    margin-bottom: var(--space-xl);
+    max-width: 600px;
+}
+
+/* Ways-to-help card grid -- same auto-fit pattern as the home highlights */
+.waysGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+}
+
+.wayCard {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+    border-top: 4px solid var(--color-primary);
+}
+
+.wayCard h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-sm);
+}
+
+.wayCard p {
+    margin: 0;
+    color: var(--color-gray-600);
+}
+
+/* Contact form -- narrower than full content width for readability */
+.form {
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* Each label + input pair stacked vertically */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.formGroup label {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--color-gray-900);
+}
+
+/* Shared styles for both <input> and <textarea> */
+.formGroup input,
+.formGroup textarea {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    font-family: inherit; /* inherit the page font so it doesn't fall back to system default */
+    color: var(--color-gray-900);
+    background-color: var(--color-white);
+    transition: border-color var(--transition-fast);
+}
+
+/* Visible focus ring for keyboard navigation accessibility */
+.formGroup input:focus,
+.formGroup textarea:focus {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: 1px;
+    border-color: var(--color-primary-light);
+}
+
+/* Allow vertical resize only so the layout doesn't break sideways */
+.formGroup textarea {
+    resize: vertical;
+}
+
+.submitBtn {
+    align-self: flex-start; /* don't stretch to full form width */
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--space-sm) var(--space-xl);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.submitBtn:hover {
+    background-color: var(--color-primary-dark);
+}

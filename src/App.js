@@ -1,24 +1,42 @@
-import logo from './logo.svg';
+// App.js -- routing hub
+
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css';
+
+// Shared layout components
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+
+// Page Components (one per route)
+import Home from './pages/Home/Home';
+import About from './pages/About/About';
+import Events from './pages/Events/Events';
+import GetInvolved from './pages/GetInvolved/GetInvolved';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      // BrowserRouter enabled
+      <BrowserRouter>
+        <div className="App">
+
+          {/* header outside routes to always render */}
+          <Header />
+
+          {/* main fills space between header and footer */}
+          <main>
+            {/* routes render only the first route that matches url*/}
+            <Routes>
+              <Route path="/"             element={<Home />} />
+              <Route path="/about"        element={<About />} />
+              <Route path="/events"       element={<Events />} />
+              <Route path="/get-involved" element={<GetInvolved />} />
+            </Routes>
+          </main>
+          
+          <Footer />
+          
+        </div>
+      </BrowserRouter>
   );
 }
 

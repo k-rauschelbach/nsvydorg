@@ -1,0 +1,97 @@
+﻿/* Header.module.css -- nav bar styles */
+
+.header {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+}
+
+/* limit content width and alignment */
+.inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+}
+
+/* Logo Link */
+.brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    color: var(--color-white);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.brand:hover {
+    color: var(--color-white);
+    text-decoration: none;
+}
+
+/* bold abbr */
+
+.brandAbbr {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* full name smaller */
+.brandFull {
+    font-size: var(--font-size-sm);
+    opacity: 0.85;
+}
+
+/* nav link row */
+.nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+}
+
+.nav a {
+    color: var(--color-white);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: border-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.nav a:hover {
+    opacity: 0.85;
+    text-decoration: none;
+    border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+
+/* active link */
+
+.active {
+    border-bottom-color: var(--color-white) !important;
+    font-weight: 700 !important;
+}
+
+/* for mobile: stack above nav */
+@media (max-width: 700px) {
+    .inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .brandFull {
+        display: none; /* hide full name on mobile */
+    }
+    
+    .nav {
+        gap: var(--space-lg);
+        flex-wrap: wrap;
+    }
+}

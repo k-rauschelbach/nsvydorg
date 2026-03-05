@@ -1,0 +1,370 @@
+/* Events.module.css -- Events page with FullCalendar overrides and modal */
+
+/* ============================================================
+   Blue page header
+   ============================================================ */
+
+.pageHeader {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.headerInner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-lg);
+}
+
+.pageHeader h1 {
+    font-size: var(--font-size-2xl);
+    margin: 0 0 var(--space-sm);
+}
+
+.pageHeader p {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    opacity: 0.9;
+}
+
+
+/* ============================================================
+   Calendar section wrapper
+   ============================================================ */
+
+.calendarSection {
+    background-color: var(--color-white);
+}
+
+.calendarInner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-lg);
+}
+
+
+/* ============================================================
+   FullCalendar overrides
+
+   FullCalendar generates its own class names at runtime (e.g.
+   .fc, .fc-button, .fc-event). CSS Modules would hash any
+   classes defined in this file, making them useless against
+   FullCalendar's un-hashed names. :global() opts selectors out
+   of hashing so they reach FullCalendar's elements directly.
+   ============================================================ */
+
+/* Inherit the page font stack instead of FullCalendar's default */
+:global(.fc) {
+    font-family: inherit;
+    font-size: var(--font-size-base);
+}
+
+/* Toolbar row containing prev/next/today and the month title */
+:global(.fc .fc-toolbar.fc-header-toolbar) {
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+:global(.fc .fc-toolbar-title) {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* Prev, next, today navigation buttons */
+:global(.fc .fc-button) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--border-radius);
+    /* FullCalendar adds a box-shadow on active state — remove it */
+    box-shadow: none !important;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+:global(.fc .fc-button:hover),
+:global(.fc .fc-button:focus) {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+    outline: none;
+}
+
+/* Today button gets a slightly lighter blue to distinguish it */
+:global(.fc .fc-today-button) {
+    background-color: var(--color-primary-light);
+    border-color: var(--color-primary-light);
+}
+
+:global(.fc .fc-today-button:hover) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* Day-of-week column headers: SUN, MON, TUE... */
+:global(.fc .fc-col-header-cell) {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--space-xs) 0;
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* The header cell links default to blue — override to white */
+:global(.fc .fc-col-header-cell a) {
+    color: var(--color-white) !important;
+    text-decoration: none;
+}
+
+/* Day number in the top-right corner of each cell */
+:global(.fc .fc-daygrid-day-number) {
+    color: var(--color-gray-600);
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs);
+}
+
+/* Today's cell — remove background tint entirely; the blue circle on the
+   day number is a cleaner, less obtrusive indicator in all views */
+:global(.fc .fc-day-today) {
+    background-color: transparent !important;
+}
+
+/* Today's day number — filled blue circle, Google Calendar style */
+:global(.fc .fc-day-today .fc-daygrid-day-number) {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border-radius: 50%;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Today's column header in week/day (timegrid) view — slightly lighter blue
+   so today is still identifiable without a distracting time-slot background */
+:global(.fc .fc-col-header-cell.fc-day-today) {
+    background-color: var(--color-primary-light) !important;
+}
+
+/* Event chips shown inside each day cell */
+:global(.fc .fc-event) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary-dark);
+    color: var(--color-white);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+:global(.fc .fc-event:hover) {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+    color: var(--color-white);
+}
+
+:global(.fc .fc-event .fc-event-title) {
+    color: var(--color-white);
+    font-weight: 500;
+}
+
+/* "+N more" overflow link when a cell has more events than it can display */
+:global(.fc .fc-daygrid-more-link) {
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+/* Allow long event titles to wrap instead of truncating with an ellipsis.
+   FullCalendar defaults to white-space: nowrap + overflow: hidden on titles. */
+:global(.fc .fc-event-title) {
+    white-space: normal;  /* let text wrap onto multiple lines */
+    overflow: visible;
+}
+
+/* In week/day (timegrid) view, also let the title container expand vertically */
+:global(.fc .fc-timegrid-event .fc-event-title-container) {
+    overflow: visible;
+}
+
+/* Active view button — darker navy so users know which view is selected */
+:global(.fc .fc-button-active) {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+}
+
+/* Time labels in week/day view (e.g. "8 AM", "9 AM") */
+:global(.fc .fc-timegrid-slot-label) {
+    color: var(--color-gray-600);
+    font-size: var(--font-size-sm);
+}
+
+/* List view: date heading rows */
+:global(.fc .fc-list-day-cushion) {
+    background-color: var(--color-gray-100);
+}
+:global(.fc .fc-list-day-text),
+:global(.fc .fc-list-day-side-text) {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* List view: individual event rows */
+:global(.fc .fc-list-event:hover td) {
+    background-color: var(--color-gray-100);
+    cursor: pointer;
+}
+:global(.fc .fc-list-event-dot) {
+    border-color: var(--color-primary);
+}
+
+/* Grid border lines — use site's light gray instead of FullCalendar default */
+:global(.fc .fc-scrollgrid),
+:global(.fc td),
+:global(.fc th) {
+    border-color: var(--color-gray-100);
+}
+
+
+/* ============================================================
+   Configuration error notice
+   Shown when REACT_APP_GOOGLE_CALENDAR_* env vars are missing
+   ============================================================ */
+
+.errorMessage {
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    /* Red left border uses the site's accent color as a warning indicator */
+    border-left: 4px solid var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    color: var(--color-gray-900);
+    line-height: 1.6;
+}
+
+.errorMessage code {
+    background-color: var(--color-gray-300);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+
+/* ============================================================
+   Event detail modal
+   ============================================================ */
+
+/* Semi-transparent overlay that covers the entire viewport.
+   position: fixed keeps it anchored regardless of scroll position.
+   inset: 0 is shorthand for top: 0; right: 0; bottom: 0; left: 0. */
+.modalBackdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* z-index: 200 sits above the sticky header (z-index: 100 in Header.module.css) */
+    z-index: 200;
+    padding: var(--space-lg);
+}
+
+/* Modal panel — white card centered in the backdrop */
+.modal {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-2xl);
+    max-width: 520px;
+    width: 100%;
+    position: relative;
+    /* Scroll inside the modal if the description is very long */
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* × close button pinned to the top-right corner of the modal panel */
+.modalClose {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--border-radius);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.modalClose:hover {
+    color: var(--color-primary);
+    background-color: var(--color-gray-100);
+}
+
+/* Event title — padding-right prevents overlap with the close button */
+.modalTitle {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-md);
+    padding-right: var(--space-xl);
+    line-height: 1.3;
+}
+
+/* Date/time and location rows */
+.modalMeta {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin: 0 0 var(--space-sm);
+    line-height: 1.5;
+}
+
+/* Description body — separated from meta by a light divider */
+.modalDescription {
+    font-size: var(--font-size-base);
+    color: var(--color-gray-900);
+    margin: var(--space-md) 0 0;
+    line-height: 1.6;
+    border-top: 1px solid var(--color-gray-100);
+    padding-top: var(--space-md);
+}
+
+
+/* ============================================================
+   Responsive — mobile adjustments
+   ============================================================ */
+
+@media (max-width: 600px) {
+    .calendarInner {
+        padding: var(--space-lg) var(--space-sm);
+    }
+
+    /* Smaller month title on narrow screens */
+    :global(.fc .fc-toolbar-title) {
+        font-size: var(--font-size-lg);
+    }
+
+    /* Stack the toolbar rows vertically so buttons don't overflow */
+    :global(.fc .fc-toolbar.fc-header-toolbar) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Smaller day numbers to fit narrow cells */
+    :global(.fc .fc-daygrid-day-number) {
+        font-size: 0.75rem;
+    }
+
+    /* Modal takes up more vertical space on mobile */
+    .modal {
+        padding: var(--space-lg);
+        max-height: 90vh;
+    }
+}

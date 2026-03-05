@@ -1,0 +1,93 @@
+/* About.module.css -- About Us page styles */
+
+/* Blue page header */
+.pageHeader {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.headerInner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-lg);
+}
+
+.pageHeader h1 {
+    font-size: var(--font-size-2xl);
+    margin: 0 0 var(--space-sm);
+}
+
+.pageHeader p {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    opacity: 0.9;
+}
+
+/* White content section */
+.section {
+    background-color: var(--color-white);
+}
+
+/* Light gray alternate section */
+.sectionAlt {
+    background-color: var(--color-gray-100);
+}
+
+/* Shared inner container -- constrains width and adds padding */
+.inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-3xl) var(--space-lg);
+}
+
+.inner h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-lg);
+}
+
+.inner p {
+    max-width: 700px;
+    margin-bottom: var(--space-md);
+}
+
+/* Leadership card grid -- same auto-fit pattern as home cards */
+.teamGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-lg);
+}
+
+.memberCard {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+}
+
+/* Placeholder avatar circle -- replace with <img> when you have photos */
+.memberAvatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--color-gray-300);
+    color: var(--color-gray-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-md);
+    font-size: var(--font-size-sm);
+}
+
+.memberCard h3 {
+    margin: 0 0 var(--space-xs);
+    color: var(--color-gray-900);
+}
+
+/* Officer title shown in blue */
+.memberTitle {
+    color: var(--color-primary);
+    font-weight: 600;
+    margin: 0 0 var(--space-sm);
+}
