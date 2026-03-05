@@ -135,6 +135,21 @@ function Events() {
                             // "auto" expands the calendar to show the full grid
                             // rather than scrolling inside a fixed height
                             height="auto"
+                            // Truncate event titles longer than 30 characters.
+                            // eventDidMount fires after each event element is added to the DOM,
+                            // covering all views (month, week, day, list).
+                            eventDidMount={(info) => {
+                                const title = info.event.title;
+                                if (title.length > 30) {
+                                    const truncated = title.slice(0, 30) + '\u2026'; // …
+                                    // Month / week / day grid chips
+                                    const chipTitle = info.el.querySelector('.fc-event-title');
+                                    if (chipTitle) chipTitle.textContent = truncated;
+                                    // List view — title is inside a <td> in the event <tr>
+                                    const listTitle = info.el.querySelector('.fc-list-event-title a');
+                                    if (listTitle) listTitle.textContent = truncated;
+                                }
+                            }}
                         />
                     )}
 

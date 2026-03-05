@@ -214,9 +214,11 @@
     font-weight: 700;
 }
 
-/* List view: individual event rows */
+/* List view: individual event rows.
+   Hover uses a light blue tint instead of gray-100 so event rows are
+   visually distinct from the gray date-heading rows on hover. */
 :global(.fc .fc-list-event:hover td) {
-    background-color: var(--color-gray-100);
+    background-color: rgba(0, 58, 140, 0.07);
     cursor: pointer;
 }
 :global(.fc .fc-list-event-dot) {

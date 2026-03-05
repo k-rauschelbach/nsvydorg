@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s /b \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\")",
+      "Bash(npm install react-router-dom)",
+      "Bash(npm install @fullcalendar/react @fullcalendar/daygrid @fullcalendar/google-calendar @fullcalendar/interaction --legacy-peer-deps)",
+      "Bash(npm install @fullcalendar/core --legacy-peer-deps)"
+    ]
+  }
+}
