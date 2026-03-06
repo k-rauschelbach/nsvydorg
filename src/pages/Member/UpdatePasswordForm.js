@@ -8,6 +8,7 @@ import {
     updatePassword,
 } from 'firebase/auth';
 import { useAuth } from '../../context/AuthContext';
+import { IconEye, IconEyeOff } from '../../components/Icons/Icons';
 // Shares the same visual style as AddMemberForm — no separate CSS needed
 import styles from './AddMemberForm.module.css';
 
@@ -102,7 +103,7 @@ function UpdatePasswordForm() {
                             onClick={() => setShowCurrent(v => !v)}
                             aria-label={showCurrent ? 'Hide password' : 'Show password'}
                         >
-                            {showCurrent ? 'Hide' : 'Show'}
+                            {showCurrent ? <IconEyeOff size={16} /> : <IconEye size={16} />}
                         </button>
                     </div>
                 </div>
@@ -127,7 +128,7 @@ function UpdatePasswordForm() {
                             onClick={() => setShowNew(v => !v)}
                             aria-label={showNew ? 'Hide password' : 'Show password'}
                         >
-                            {showNew ? 'Hide' : 'Show'}
+                            {showNew ? <IconEyeOff size={16} /> : <IconEye size={16} />}
                         </button>
                     </div>
                 </div>
@@ -152,7 +153,7 @@ function UpdatePasswordForm() {
                             onClick={() => setShowConfirm(v => !v)}
                             aria-label={showConfirm ? 'Hide password' : 'Show password'}
                         >
-                            {showConfirm ? 'Hide' : 'Show'}
+                            {showConfirm ? <IconEyeOff size={16} /> : <IconEye size={16} />}
                         </button>
                     </div>
                 </div>

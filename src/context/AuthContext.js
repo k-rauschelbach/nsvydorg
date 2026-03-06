@@ -1,6 +1,6 @@
 // AuthContext.js — Provides authentication state and the login modal toggle
 // to the entire React tree via the useAuth() hook.
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
@@ -15,6 +15,13 @@ export function useAuth() {
     return useContext(AuthContext);
 }
 
+// ── Inactivity timeout settings ───────────────────────────────────────────────
+// After IDLE_TIMEOUT_MS of no mouse/keyboard/touch activity the user is
+// automatically signed out. The interval polls every CHECK_INTERVAL_MS.
+const IDLE_TIMEOUT_MS   = 30 * 60 * 1000; // 30 minutes
+const CHECK_INTERVAL_MS =      60 * 1000; // check every 60 seconds
+const ACTIVITY_EVENTS   = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+
 export function AuthProvider({ children }) {
     // Firebase User object when logged in, null when logged out
     const [currentUser, setCurrentUser] = useState(null);
@@ -26,6 +33,46 @@ export function AuthProvider({ children }) {
 
     // Controls the LoginModal visibility from anywhere in the tree
     const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+    // ── Idle timeout refs ─────────────────────────────────────────────────────
+    // useRef instead of useState — updating these on every mouse move must
+    // NOT trigger re-renders, so we mutate the ref directly.
+    const lastActivityRef = useRef(Date.now());
+    const intervalRef     = useRef(null);
+
+    // Stable callback — same function reference across renders so
+    // addEventListener / removeEventListener always get the same handle.
+    const resetIdleTimer = useCallback(() => {
+        lastActivityRef.current = Date.now();
+    }, []);
+
+    // Start monitoring when logged in; tear down when logged out or unmounted.
+    useEffect(() => {
+        if (!currentUser) {
+            // User signed out — clear the interval and stop listening
+            clearInterval(intervalRef.current);
+            ACTIVITY_EVENTS.forEach(ev => window.removeEventListener(ev, resetIdleTimer));
+            return;
+        }
+
+        // User just logged in — reset the activity clock
+        lastActivityRef.current = Date.now();
+
+        // Track any interaction as activity
+        ACTIVITY_EVENTS.forEach(ev => window.addEventListener(ev, resetIdleTimer));
+
+        // Poll once per minute; sign out when idle threshold is exceeded
+        intervalRef.current = setInterval(() => {
+            if (Date.now() - lastActivityRef.current >= IDLE_TIMEOUT_MS) {
+                signOut(auth); // triggers onAuthStateChanged → currentUser = null
+            }
+        }, CHECK_INTERVAL_MS);
+
+        return () => {
+            clearInterval(intervalRef.current);
+            ACTIVITY_EVENTS.forEach(ev => window.removeEventListener(ev, resetIdleTimer));
+        };
+    }, [currentUser, resetIdleTimer]);
 
     // Subscribe to Firebase auth state changes. Fires immediately on mount
     // with the persisted session (if any), then again on login/logout.

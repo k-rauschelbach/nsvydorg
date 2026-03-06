@@ -3,6 +3,7 @@
 // user's session is never interrupted by the creation of the new account.
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { IconEye, IconEyeOff } from '../../components/Icons/Icons';
 import styles from './AddMemberForm.module.css';
 
 function AddMemberForm() {
@@ -139,7 +140,7 @@ function AddMemberForm() {
                                 onClick={() => setShowPw(v => !v)}
                                 aria-label={showPw ? 'Hide password' : 'Show password'}
                             >
-                                {showPw ? 'Hide' : 'Show'}
+                                {showPw ? <IconEyeOff size={16} /> : <IconEye size={16} />}
                             </button>
                         </div>
                     </div>

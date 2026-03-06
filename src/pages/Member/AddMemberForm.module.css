@@ -60,17 +60,18 @@
 
 .passwordWrapper input {
     flex: 1;
-    padding-right: 3rem; /* room for the toggle button */
+    padding-right: 2.5rem; /* room for the eye icon toggle */
 }
 
 .showToggle {
     position: absolute;
     right: var(--space-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     color: var(--color-gray-600);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
     cursor: pointer;
     padding: var(--space-xs);
     font-family: inherit;
