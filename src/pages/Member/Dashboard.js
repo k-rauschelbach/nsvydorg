@@ -11,8 +11,12 @@ import UpdatePasswordForm from './UpdatePasswordForm';
 import styles from './Dashboard.module.css';
 
 function Dashboard() {
-    const { currentUser, logout, refreshCurrentUser } = useAuth();
+    const { currentUser, logout, refreshCurrentUser, userRole } = useAuth();
     const navigate = useNavigate();
+
+    // ── Add Member modal ──────────────────────────────────────────────────────
+    // Only officers ever see the button or the modal.
+    const [addMemberOpen, setAddMemberOpen] = useState(false);
 
     // ── Inline name edit state ────────────────────────────────
     const [editingName, setEditingName] = useState(false);
@@ -186,8 +190,21 @@ function Dashboard() {
 
                     </div>
 
-                    {/* Add new member accounts without leaving the portal */}
-                    <AddMemberForm />
+                    {/* Officer-only: Add Member button + modal */}
+                    {userRole === 'officer' && (
+                        <>
+                            <button
+                                className={styles.addMemberBtn}
+                                onClick={() => setAddMemberOpen(true)}
+                            >
+                                Add Member
+                            </button>
+                            <AddMemberForm
+                                isOpen={addMemberOpen}
+                                onClose={() => setAddMemberOpen(false)}
+                            />
+                        </>
+                    )}
 
                     {/* Update the currently signed-in member's password */}
                     <UpdatePasswordForm />

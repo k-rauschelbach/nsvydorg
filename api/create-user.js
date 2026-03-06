@@ -6,6 +6,7 @@
 // Security model:
 //   - Caller must supply a valid Firebase ID token in the Authorization header.
 //   - The token is verified against Firebase before any user is created.
+//   - Caller must have the 'officer' custom claim — members cannot create accounts.
 //   - Admin credentials (service account) are stored as Vercel env vars and
 //     are NEVER sent to the browser.
 
@@ -42,31 +43,52 @@ module.exports = async function handler(req, res) {
         return res.status(401).json({ error: 'Missing authentication token.' });
     }
 
-    // Verify the token is valid and hasn't expired
+    // Verify the token and check that the caller is an officer
+    let decodedToken;
     try {
-        await admin.auth().verifyIdToken(authHeader.slice(7));
+        decodedToken = await admin.auth().verifyIdToken(authHeader.slice(7));
     } catch {
         return res.status(401).json({ error: 'Invalid or expired authentication token.' });
     }
 
+    if (decodedToken.role !== 'officer') {
+        return res.status(403).json({ error: 'Only officers can create new members.' });
+    }
+
     // Validate request body
-    const { email, password, displayName } = req.body ?? {};
+    const { email, password, displayName, role } = req.body ?? {};
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required.' });
     }
 
     // Create the new Firebase Authentication user
+    let user;
     try {
-        const user = await admin.auth().createUser({
+        user = await admin.auth().createUser({
             email,
             password,
             ...(displayName && { displayName }),
         });
-        return res.status(200).json({ success: true, email: user.email });
     } catch (err) {
         const code = err.errorInfo?.code;
         return res.status(400).json({
             error: FRIENDLY_ERRORS[code] || 'Failed to create member. Please try again.',
         });
     }
+
+    // Set the role custom claim on the new user.
+    // Only 'officer' is promoted explicitly; everything else becomes 'member'.
+    const newRole = (role === 'officer') ? 'officer' : 'member';
+    try {
+        await admin.auth().setCustomUserClaims(user.uid, { role: newRole });
+    } catch {
+        // Non-fatal: user exists but claim failed. Return success with a warning.
+        return res.status(200).json({
+            success: true,
+            email: user.email,
+            warning: 'Account created but role could not be set. Contact an admin.',
+        });
+    }
+
+    return res.status(200).json({ success: true, email: user.email });
 };

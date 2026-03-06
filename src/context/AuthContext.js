@@ -26,6 +26,10 @@ export function AuthProvider({ children }) {
     // Firebase User object when logged in, null when logged out
     const [currentUser, setCurrentUser] = useState(null);
 
+    // 'officer' | 'member' | null — read from Firebase Custom Claims.
+    // Populated after each auth-state change via getIdTokenResult(true).
+    const [userRole, setUserRole] = useState(null);
+
     // True while Firebase is resolving the persisted session from localStorage.
     // Children are hidden until this resolves to prevent a redirect flicker for
     // already-authenticated users.
@@ -84,6 +88,19 @@ export function AuthProvider({ children }) {
         return unsubscribe; // cleanup on unmount
     }, []);
 
+    // Read the 'role' custom claim from the user's JWT after every auth change.
+    // forceRefresh: true ensures we pick up newly-set claims immediately after
+    // the user signs back in following a role update (e.g. set-officer script).
+    useEffect(() => {
+        if (!currentUser) {
+            setUserRole(null);
+            return;
+        }
+        currentUser.getIdTokenResult(/* forceRefresh */ true)
+            .then(result => setUserRole(result.claims.role ?? null))
+            .catch(() => setUserRole(null));
+    }, [currentUser]);
+
     function login(email, password) {
         return signInWithEmailAndPassword(auth, email, password);
     }
@@ -102,6 +119,7 @@ export function AuthProvider({ children }) {
 
     const value = {
         currentUser,
+        userRole,
         login,
         logout,
         loginModalOpen,

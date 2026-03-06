@@ -324,6 +324,28 @@
 }
 
 /* ============================================================
+   Officer-only: Add Member trigger button
+   Appears below the feature cards; invisible to members.
+   ============================================================ */
+.addMemberBtn {
+    margin-top: var(--space-2xl);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--space-sm) var(--space-xl);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color var(--transition-fast);
+}
+
+.addMemberBtn:hover {
+    background-color: var(--color-primary-dark);
+}
+
+/* ============================================================
    Responsive
    ============================================================ */
 @media (max-width: 600px) {

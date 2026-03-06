@@ -19,7 +19,8 @@
       "Bash(git -C \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\" ls-files src/pages/)",
       "Bash(git -C \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\" ls-files api/)",
       "Bash(git -C \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\" config core.ignorecase)",
-      "Bash(file \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\pages\\\\Member\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\context\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\components\\\\LoginModal\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\components\\\\ProtectedRoute\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\firebase.js\")"
+      "Bash(file \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\pages\\\\Member\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\context\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\components\\\\LoginModal\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\components\\\\ProtectedRoute\"/* \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\src\\\\firebase.js\")",
+      "Bash(test -d \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scripts\")"
     ]
   }
 }

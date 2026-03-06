@@ -1,9 +1,74 @@
-/* AddMemberForm.module.css — Add member form inside the dashboard */
+/* AddMemberForm.module.css — Add member modal, shared also by UpdatePasswordForm */
 
-.section {
-    margin-top: var(--space-3xl);
-    padding-top: var(--space-2xl);
-    border-top: 2px solid var(--color-gray-100);
+/* ============================================================
+   Modal backdrop — fixed, above everything (z-index 300)
+   ============================================================ */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: var(--space-lg);
+    animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ============================================================
+   Modal panel
+   ============================================================ */
+.modal {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-2xl);
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+    .modal { padding: var(--space-lg); }
+}
+
+/* ============================================================
+   Close button — top-right corner of the panel
+   ============================================================ */
+.closeBtn {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--border-radius);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.closeBtn:hover {
+    color: var(--color-primary);
+    background-color: var(--color-gray-100);
+}
+
+/* ============================================================
+   Modal header — title + subtitle
+   ============================================================ */
+.modalHeader {
+    margin-bottom: var(--space-xl);
+    padding-right: var(--space-2xl); /* avoid overlap with close button */
 }
 
 .sectionTitle {
@@ -15,8 +80,17 @@
 .sectionSubtitle {
     font-size: var(--font-size-sm);
     color: var(--color-gray-600);
-    margin: 0 0 var(--space-xl);
+    margin: 0;
     line-height: 1.5;
+}
+
+/* ============================================================
+   Dashboard inline-section styles (used by UpdatePasswordForm)
+   ============================================================ */
+.section {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-2xl);
+    border-top: 2px solid var(--color-gray-100);
 }
 
 /* ============================================================
@@ -100,6 +174,34 @@
 }
 
 .formGroup input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Role <select> — same visual style as inputs
+   ============================================================ */
+.roleSelect {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    color: var(--color-gray-900);
+    background-color: var(--color-white);
+    transition: border-color var(--transition-fast);
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.roleSelect:focus {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: 1px;
+    border-color: var(--color-primary-light);
+}
+
+.roleSelect:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
