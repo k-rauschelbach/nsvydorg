@@ -3,7 +3,6 @@
 // (loginModalOpen / closeLoginModal). The modal closes on backdrop click,
 // Escape key, successful login, or the × button.
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './LoginModal.module.css';
 
@@ -24,7 +23,6 @@ const ERROR_MESSAGES = {
 
 function LoginModal() {
     const { loginModalOpen, closeLoginModal, login } = useAuth();
-    const navigate = useNavigate();
 
     const [email,    setEmail]    = useState('');
     const [password, setPassword] = useState('');
