@@ -14,11 +14,11 @@ function Dashboard() {
     const { currentUser, logout, refreshCurrentUser, userRole } = useAuth();
     const navigate = useNavigate();
 
-    // ── Add Member modal ──────────────────────────────────────────────────────
+    //  Add Member modal 
     // Only officers ever see the button or the modal.
     const [addMemberOpen, setAddMemberOpen] = useState(false);
 
-    // ── Inline name edit state ────────────────────────────────
+    //  Inline name edit state 
     const [editingName, setEditingName] = useState(false);
     const [nameFirst,   setNameFirst]   = useState('');
     const [nameLast,    setNameLast]    = useState('');
@@ -48,7 +48,7 @@ function Dashboard() {
         }
     }
 
-    // ── Sign out ──────────────────────────────────────────────
+    //  Sign out 
     async function handleSignOut() {
         try {
             await logout();
@@ -59,14 +59,14 @@ function Dashboard() {
         }
     }
 
-    // ── Derived display name (first word, or email prefix) ────
+    //  Derived display name (first word, or email prefix) 
     const firstName = currentUser.displayName?.split(' ')[0]
         ?? currentUser.email.split('@')[0];
 
     return (
         <div className={styles.shell}>
 
-            {/* ── Minimal member header ── */}
+            {/*  Minimal member header  */}
             <header className={styles.memberHeader}>
                 <div className={styles.memberHeaderInner}>
 
@@ -97,11 +97,11 @@ function Dashboard() {
                 </div>
             </header>
 
-            {/* ── Dashboard body ── */}
+            {/*  Dashboard body  */}
             <main className={styles.main}>
                 <div className={styles.inner}>
 
-                    {/* ── Greeting + inline name edit ── */}
+                    {/*  Greeting + inline name edit  */}
                     <div className={styles.greeting}>
                         {editingName ? (
                             <div className={styles.nameEditForm}>
