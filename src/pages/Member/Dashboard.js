@@ -2,7 +2,7 @@
 // Has its own minimal header (no public site Header or Footer).
 // Placeholder cards will be replaced with real member features over time.
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, NavLink } from 'react-router-dom';
 import { updateProfile } from 'firebase/auth';
 import { useAuth } from '../../context/AuthContext';
 import AddMemberForm from './AddMemberForm';
@@ -70,6 +70,14 @@ function Dashboard() {
                         <span className={styles.brandAbbr}>NSVYD</span>
                         <span className={styles.brandBadge}>Member</span>
                     </Link>
+
+                    {/* Public site nav links */}
+                    <nav className={styles.nav}>
+                        <NavLink to="/"             className={({isActive}) => isActive ? styles.navActive : ''}>Home</NavLink>
+                        <NavLink to="/about"        className={({isActive}) => isActive ? styles.navActive : ''}>About Us</NavLink>
+                        <NavLink to="/events"       className={({isActive}) => isActive ? styles.navActive : ''}>Events</NavLink>
+                        <NavLink to="/get-involved" className={({isActive}) => isActive ? styles.navActive : ''}>Get Involved</NavLink>
+                    </nav>
 
                     <div className={styles.headerRight}>
                         <span className={styles.email}>{currentUser.email}</span>

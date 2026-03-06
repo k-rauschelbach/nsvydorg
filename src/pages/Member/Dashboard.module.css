@@ -58,6 +58,34 @@
     text-transform: uppercase;
 }
 
+/* Public site nav links */
+.nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+}
+
+.nav a {
+    color: var(--color-white);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: border-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.nav a:hover {
+    opacity: 0.85;
+    text-decoration: none;
+    border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+
+.navActive {
+    border-bottom-color: var(--color-white) !important;
+    font-weight: 700 !important;
+}
+
 /* Right side: email + sign-out button */
 .headerRight {
     display: flex;
@@ -299,12 +327,16 @@
    Responsive
    ============================================================ */
 @media (max-width: 600px) {
-    /* Hide email on narrow screens — keep sign-out button and brand visible */
+    /* Hide email and nav on narrow screens — keep sign-out button and brand visible */
     .email {
         display: none;
     }
 
     .brandBadge {
+        display: none;
+    }
+
+    .nav {
         display: none;
     }
 

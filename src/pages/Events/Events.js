@@ -1,6 +1,6 @@
 // Events.js -- Events page with FullCalendar Google Calendar integration
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 // FullCalendar core React wrapper
 import FullCalendar from '@fullcalendar/react';
@@ -27,6 +27,7 @@ function Events() {
     // selectedEvent holds the FullCalendar event object the user clicked,
     // or null when no modal is open
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const mouseDownOnBackdrop = useRef(false);
 
     // Called by FullCalendar when the user clicks an event chip in the grid
     function handleEventClick(clickInfo) {
@@ -37,9 +38,15 @@ function Events() {
     }
 
     // Close the modal when the user clicks on the dark backdrop
-    // (but not when clicking inside the modal panel itself)
+    // (but not when clicking inside the modal panel itself).
+    // Track mousedown origin so dragging from inside the modal to outside
+    // the backdrop does not accidentally close it.
+    function handleBackdropMouseDown(e) {
+        mouseDownOnBackdrop.current = e.target === e.currentTarget;
+    }
+
     function handleBackdropClick(e) {
-        if (e.target === e.currentTarget) {
+        if (e.target === e.currentTarget && mouseDownOnBackdrop.current) {
             setSelectedEvent(null);
         }
     }
@@ -160,6 +167,7 @@ function Events() {
             {selectedEvent && (
                 <div
                     className={styles.modalBackdrop}
+                    onMouseDown={handleBackdropMouseDown}
                     onClick={handleBackdropClick}
                     role="dialog"
                     aria-modal="true"

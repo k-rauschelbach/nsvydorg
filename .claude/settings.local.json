@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm start)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000\")",
+      "Bash(taskkill /PID 26020 /F)",
+      "Bash(cmd //c \"taskkill /PID 26020 /F\")"
+    ]
+  }
+}
