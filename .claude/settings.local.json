@@ -1,16 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node --version)",
-      "Bash(npm --version)",
-      "Bash(npm install)",
+      "Bash(npm start)",
       "mcp__Claude_Preview__preview_start",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
       "Bash(netstat -ano)",
-      "Bash(xargs -I{} taskkill /F /PID {})",
-      "Bash(taskkill /F /PID 25120)",
-      "Bash(powershell -Command \"Stop-Process -Id 25120 -Force\")",
-      "Bash(powershell -Command \"Stop-Process -Id 28452 -Force\")"
+      "Bash(findstr \":3000\")",
+      "Bash(taskkill /PID 26020 /F)",
+      "Bash(cmd //c \"taskkill /PID 26020 /F\")"
     ]
   }
 }

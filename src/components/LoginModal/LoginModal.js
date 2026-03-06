@@ -2,7 +2,7 @@
 // Rendered once at the App level. Visibility is controlled via AuthContext
 // (loginModalOpen / closeLoginModal). The modal closes on backdrop click,
 // Escape key, successful login, or the × button.
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import styles from './LoginModal.module.css';
 
@@ -28,6 +28,8 @@ function LoginModal() {
     const [password, setPassword] = useState('');
     const [error,    setError]    = useState('');
     const [loading,  setLoading]  = useState(false);
+
+    const mouseDownOnBackdrop = useRef(false);
 
     // Close and reset form state
     const handleClose = useCallback(() => {
@@ -58,9 +60,14 @@ function LoginModal() {
         return () => { document.body.style.overflow = ''; };
     }, [loginModalOpen]);
 
-    // Close on backdrop click (not on modal panel click)
+    // Close on backdrop click only when both mousedown and mouseup occur on the backdrop.
+    // This prevents closing when the user clicks inside the modal and drags out.
+    function handleBackdropMouseDown(e) {
+        mouseDownOnBackdrop.current = e.target === e.currentTarget;
+    }
+
     function handleBackdropClick(e) {
-        if (e.target === e.currentTarget) handleClose();
+        if (e.target === e.currentTarget && mouseDownOnBackdrop.current) handleClose();
     }
 
     async function handleSubmit(e) {
@@ -89,6 +96,7 @@ function LoginModal() {
     return (
         <div
             className={styles.backdrop}
+            onMouseDown={handleBackdropMouseDown}
             onClick={handleBackdropClick}
             role="dialog"
             aria-modal="true"
