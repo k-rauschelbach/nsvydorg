@@ -1,9 +1,13 @@
 // Header.js -- nav bar
 
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Header.module.css';
 
 function Header() {
+    const { currentUser, openLoginModal } = useAuth();
+    const navigate = useNavigate();
+
     return (
         <header className={styles.header}>
             <div className={styles.inner}>
@@ -15,17 +19,35 @@ function Header() {
                     </span>
                 </NavLink>
 
-                {/*Nav links*/}
+                {/*Nav links + member auth button*/}
                 <nav className={styles.nav}>
                     <NavLink to="/"             className={({isActive}) => isActive ? styles.active : ''}>Home</NavLink>
                     <NavLink to="/about"        className={({isActive}) => isActive ? styles.active : ''}>About Us</NavLink>
                     <NavLink to="/events"       className={({isActive}) => isActive ? styles.active : ''}>Events</NavLink>
                     <NavLink to="/get-involved" className={({isActive}) => isActive ? styles.active : ''}>Get Involved</NavLink>
+
+                    {/* Auth button — ghost when logged out, filled white when logged in */}
+                    {currentUser ? (
+                        <button
+                            className={styles.memberBtnActive}
+                            onClick={() => navigate('/member')}
+                            title={currentUser.email}
+                        >
+                            {currentUser.email}
+                        </button>
+                    ) : (
+                        <button
+                            className={styles.memberBtn}
+                            onClick={openLoginModal}
+                        >
+                            Member Login
+                        </button>
+                    )}
                 </nav>
-                
+
             </div>
         </header>
-    )
+    );
 }
 
 export default Header;

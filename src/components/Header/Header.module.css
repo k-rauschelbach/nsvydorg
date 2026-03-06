@@ -79,6 +79,51 @@
     font-weight: 700 !important;
 }
 
+/* ── Member auth button ──────────────────────────────────────────────────── */
+
+/* Ghost style — not logged in */
+.memberBtn {
+    background: transparent;
+    color: var(--color-white);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--border-radius);
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.memberBtn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Filled white — logged in; shows the user's email */
+.memberBtnActive {
+    background: var(--color-white);
+    color: var(--color-primary);
+    border: 1px solid var(--color-white);
+    border-radius: var(--border-radius);
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    /* Truncate long email addresses gracefully */
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: background-color var(--transition-fast);
+}
+
+.memberBtnActive:hover {
+    background: var(--color-gray-100);
+}
+
 /* for mobile: stack above nav */
 @media (max-width: 700px) {
     .inner {

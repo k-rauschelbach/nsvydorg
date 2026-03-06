@@ -1,0 +1,174 @@
+/* LoginModal.module.css — Login modal overlay styles */
+
+/* ============================================================
+   Backdrop — fixed over the entire viewport, above the sticky
+   header (z-index: 100) and the FullCalendar modal (z-index: 200)
+   ============================================================ */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: var(--space-lg);
+    /* Fade in */
+    animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ============================================================
+   Modal panel
+   ============================================================ */
+.modal {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-2xl);
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+}
+
+/* ============================================================
+   Header inside the modal
+   ============================================================ */
+.modalHeader {
+    margin-bottom: var(--space-xl);
+}
+
+.modalHeader h2 {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-xs);
+    padding-right: var(--space-xl); /* avoid overlap with close button */
+}
+
+.modalHeader p {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin: 0;
+}
+
+/* ============================================================
+   Close button — top-right corner
+   ============================================================ */
+.closeBtn {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--border-radius);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.closeBtn:hover {
+    color: var(--color-primary);
+    background-color: var(--color-gray-100);
+}
+
+/* ============================================================
+   Form — mirrors GetInvolved.module.css patterns exactly
+   ============================================================ */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.formGroup label {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--color-gray-900);
+}
+
+.formGroup input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    color: var(--color-gray-900);
+    background-color: var(--color-white);
+    transition: border-color var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.formGroup input:focus {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: 1px;
+    border-color: var(--color-primary-light);
+}
+
+.formGroup input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Error message — red left-border card, same as Events.module.css
+   ============================================================ */
+.errorMessage {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-left: 4px solid var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    color: var(--color-gray-900);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Submit button — same as GetInvolved .submitBtn
+   ============================================================ */
+.submitBtn {
+    align-self: flex-start;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--space-sm) var(--space-xl);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    font-family: inherit;
+}
+
+.submitBtn:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+}
+
+.submitBtn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 480px) {
+    .modal {
+        padding: var(--space-lg);
+    }
+}

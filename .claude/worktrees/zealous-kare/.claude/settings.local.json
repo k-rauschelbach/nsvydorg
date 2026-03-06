@@ -10,7 +10,9 @@
       "Bash(Remove-Item \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\strip-bom.ps1\")",
       "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\strip-bom.ps1''\")",
       "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scan-bom.ps1\")",
-      "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scan-bom.ps1''\")"
+      "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scan-bom.ps1''\")",
+      "Bash(npm install firebase)",
+      "Bash(npm install firebase-admin)"
     ]
   }
 }
