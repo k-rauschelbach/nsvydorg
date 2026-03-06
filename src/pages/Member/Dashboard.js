@@ -6,6 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { updateProfile } from 'firebase/auth';
 import { useAuth } from '../../context/AuthContext';
 import AddMemberForm from './AddMemberForm';
+import UpdatePasswordForm from './UpdatePasswordForm';
 import styles from './Dashboard.module.css';
 
 function Dashboard() {
@@ -193,6 +194,9 @@ function Dashboard() {
 
                     {/* Add new member accounts without leaving the portal */}
                     <AddMemberForm />
+
+                    {/* Update the currently signed-in member's password */}
+                    <UpdatePasswordForm />
 
                 </div>
             </main>
