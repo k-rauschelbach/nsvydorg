@@ -229,7 +229,7 @@
 :global(.fc .fc-scrollgrid),
 :global(.fc td),
 :global(.fc th) {
-    border-color: var(--color-gray-100);
+    border-color: var(--color-gray-300);
 }
 
 

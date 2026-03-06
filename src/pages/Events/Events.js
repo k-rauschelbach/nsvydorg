@@ -140,8 +140,8 @@ function Events() {
                             // covering all views (month, week, day, list).
                             eventDidMount={(info) => {
                                 const title = info.event.title;
-                                if (title.length > 30) {
-                                    const truncated = title.slice(0, 30) + '\u2026'; // …
+                                if (title.length > 64) {
+                                    const truncated = title.slice(0, 64) + '\u2026'; // …
                                     // Month / week / day grid chips
                                     const chipTitle = info.el.querySelector('.fc-event-title');
                                     if (chipTitle) chipTitle.textContent = truncated;
