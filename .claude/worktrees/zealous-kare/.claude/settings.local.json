@@ -12,7 +12,10 @@
       "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scan-bom.ps1\")",
       "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\\\\scan-bom.ps1''\")",
       "Bash(npm install firebase)",
-      "Bash(npm install firebase-admin)"
+      "Bash(npm install firebase-admin)",
+      "Bash(git -C \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\" status --short)",
+      "Bash(git -C \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\" ls-files src/pages/Member/)",
+      "Bash(git -C \"C:\\\\Users\\\\KarlRauschelbach\\\\OneDrive\\\\Documents\\\\nsvyd.org\" ls-files src/context/ src/components/LoginModal/ src/components/ProtectedRoute/)"
     ]
   }
 }

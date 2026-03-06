@@ -1,0 +1,176 @@
+/* Dashboard.module.css — Member dashboard styles.
+   No public Header or Footer — the dashboard has its own minimal member header. */
+
+/* ============================================================
+   Page shell
+   ============================================================ */
+.shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--color-off-white);
+}
+
+/* ============================================================
+   Member header — minimal nav bar
+   Same primary blue as the public Header for visual continuity
+   ============================================================ */
+.memberHeader {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    box-shadow: var(--shadow-md);
+}
+
+.memberHeaderInner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+}
+
+/* Brand — left side */
+.brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    text-decoration: none;
+}
+
+.brandAbbr {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--color-white);
+}
+
+/* "Member" pill badge next to the abbreviation */
+.brandBadge {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-white);
+    padding: 0.15em var(--space-sm);
+    border-radius: var(--border-radius);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Right side: email + sign-out button */
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+.email {
+    font-size: var(--font-size-sm);
+    color: var(--color-white);
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+
+/* Ghost sign-out button */
+.signOutBtn {
+    background-color: transparent;
+    color: var(--color-white);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: var(--border-radius);
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.signOutBtn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================================================
+   Dashboard body
+   ============================================================ */
+.main {
+    flex: 1;
+}
+
+.inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-3xl) var(--space-lg);
+}
+
+.pageTitle {
+    font-size: var(--font-size-2xl);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-sm);
+}
+
+.welcomeText {
+    color: var(--color-gray-600);
+    font-size: var(--font-size-base);
+    margin: 0 0 var(--space-2xl);
+}
+
+/* ============================================================
+   Placeholder cards — same auto-fit grid as public pages
+   ============================================================ */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+}
+
+.card {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+    border-top: 4px solid var(--color-primary);
+}
+
+.card h2 {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-sm);
+}
+
+.card p {
+    color: var(--color-gray-600);
+    font-size: var(--font-size-sm);
+    margin: 0 0 var(--space-md);
+    line-height: 1.6;
+}
+
+.comingSoon {
+    display: inline-block;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-gray-600);
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+    padding: var(--space-xs) var(--space-sm);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 600px) {
+    /* Hide email on narrow screens — keep sign-out button and brand visible */
+    .email {
+        display: none;
+    }
+
+    .brandBadge {
+        display: none;
+    }
+}

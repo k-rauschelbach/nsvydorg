@@ -1,0 +1,157 @@
+/* AddMemberForm.module.css — Add member form inside the dashboard */
+
+.section {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-2xl);
+    border-top: 2px solid var(--color-gray-100);
+}
+
+.sectionTitle {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-xs);
+}
+
+.sectionSubtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin: 0 0 var(--space-xl);
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Form — mirrors LoginModal / GetInvolved form patterns
+   ============================================================ */
+.form {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+@media (max-width: 600px) {
+    .formRow { grid-template-columns: 1fr; }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.formGroup label {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--color-gray-900);
+}
+
+/* Password field wrapper — for the show/hide toggle */
+.passwordWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.passwordWrapper input {
+    flex: 1;
+    padding-right: 3rem; /* room for the toggle button */
+}
+
+.showToggle {
+    position: absolute;
+    right: var(--space-sm);
+    background: none;
+    border: none;
+    color: var(--color-gray-600);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    padding: var(--space-xs);
+    font-family: inherit;
+    transition: color var(--transition-fast);
+}
+
+.showToggle:hover { color: var(--color-primary); }
+
+.formGroup input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    color: var(--color-gray-900);
+    background-color: var(--color-white);
+    transition: border-color var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.formGroup input:focus {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: 1px;
+    border-color: var(--color-primary-light);
+}
+
+.formGroup input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Feedback messages
+   ============================================================ */
+.errorMessage {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-left: 4px solid var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    color: var(--color-gray-900);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.successMessage {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-left: 4px solid #2e7d32; /* green — success */
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    color: var(--color-gray-900);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Submit button
+   ============================================================ */
+.submitBtn {
+    align-self: flex-start;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--space-sm) var(--space-xl);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color var(--transition-fast);
+}
+
+.submitBtn:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+}
+
+.submitBtn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
