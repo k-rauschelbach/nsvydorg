@@ -8,6 +8,8 @@ import styles from './AddMemberForm.module.css';
 function AddMemberForm() {
     const { currentUser } = useAuth();
 
+    const [firstName, setFirstName] = useState('');
+    const [lastName,  setLastName]  = useState('');
     const [email,    setEmail]    = useState('');
     const [password, setPassword] = useState('');
     const [showPw,   setShowPw]   = useState(false);
@@ -19,6 +21,8 @@ function AddMemberForm() {
         e.preventDefault();
         setError('');
         setSuccess('');
+
+        const displayName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
         if (password.length < 6) {
             setError('Password must be at least 6 characters.');
@@ -37,7 +41,7 @@ function AddMemberForm() {
                     'Content-Type':  'application/json',
                     'Authorization': `Bearer ${idToken}`,
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password, ...(displayName && { displayName }) }),
             });
 
             const data = await res.json();
@@ -45,7 +49,10 @@ function AddMemberForm() {
             if (!res.ok) {
                 setError(data.error || 'Failed to create member. Please try again.');
             } else {
-                setSuccess(`Member account created for ${data.email}. Share the password with them securely.`);
+                const nameLabel = displayName || data.email;
+                setSuccess(`Member account created for ${nameLabel}. Share the password with them securely.`);
+                setFirstName('');
+                setLastName('');
                 setEmail('');
                 setPassword('');
                 setShowPw(false);
@@ -66,6 +73,35 @@ function AddMemberForm() {
             </p>
 
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
+
+                {/* First + Last Name */}
+                <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="new-member-first-name">First Name</label>
+                        <input
+                            type="text"
+                            id="new-member-first-name"
+                            placeholder="Jane"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            autoComplete="off"
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label htmlFor="new-member-last-name">Last Name</label>
+                        <input
+                            type="text"
+                            id="new-member-last-name"
+                            placeholder="Smith"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            autoComplete="off"
+                            disabled={loading}
+                        />
+                    </div>
+                </div>
 
                 <div className={styles.formRow}>
                     {/* Email */}

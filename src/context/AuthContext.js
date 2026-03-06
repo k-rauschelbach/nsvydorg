@@ -48,6 +48,11 @@ export function AuthProvider({ children }) {
     function openLoginModal()  { setLoginModalOpen(true);  }
     function closeLoginModal() { setLoginModalOpen(false); }
 
+    // Forces all context consumers (Header, Dashboard, etc.) to re-render so
+    // they pick up the mutated displayName after updateProfile() is called.
+    const [, forceUpdate] = useState(0);
+    function refreshCurrentUser() { forceUpdate(n => n + 1); }
+
     const value = {
         currentUser,
         login,
@@ -55,6 +60,7 @@ export function AuthProvider({ children }) {
         loginModalOpen,
         openLoginModal,
         closeLoginModal,
+        refreshCurrentUser,
     };
 
     // Render nothing until Firebase has resolved the initial auth state

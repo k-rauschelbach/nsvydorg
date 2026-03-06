@@ -31,9 +31,9 @@ function Header() {
                         <button
                             className={styles.memberBtnActive}
                             onClick={() => navigate('/member')}
-                            title={currentUser.email}
+                            title={currentUser.displayName || currentUser.email}
                         >
-                            {currentUser.email}
+                            {currentUser.displayName?.split(' ')[0] ?? currentUser.email.split('@')[0]}
                         </button>
                     ) : (
                         <button

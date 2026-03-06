@@ -50,14 +50,18 @@ module.exports = async function handler(req, res) {
     }
 
     // Validate request body
-    const { email, password } = req.body ?? {};
+    const { email, password, displayName } = req.body ?? {};
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required.' });
     }
 
     // Create the new Firebase Authentication user
     try {
-        const user = await admin.auth().createUser({ email, password });
+        const user = await admin.auth().createUser({
+            email,
+            password,
+            ...(displayName && { displayName }),
+        });
         return res.status(200).json({ success: true, email: user.email });
     } catch (err) {
         const code = err.errorInfo?.code;
