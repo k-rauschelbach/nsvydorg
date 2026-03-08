@@ -177,7 +177,7 @@ function GetInvolved() {
                                 </p>
                                 <button
                                     type={"button"}
-                                    className{styles.submitBtn}
+                                    className={}{styles.submitBtn}
                                     onClick={() => navigate('/member')}
                                     >
                                     Want to add a new member?
