@@ -51,12 +51,12 @@ function GetInvolved() {
     // Called when the form is submitted
     async function handleSubmit(e) {
         e.preventDefault(); // Prevent the default browser behavior (page reload)
-        const res = await fetch('/api/contact', {
+        const res = await fetch('/api/send-contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),
         });
-        if (!res.ok) {
+        if (res.ok) {
             alert('Thank you for your message! We will be in touch soon.');
             setFormData({ name: '', email: '', subject: '', message: '' }); // reset form to empty strings
         } else {
