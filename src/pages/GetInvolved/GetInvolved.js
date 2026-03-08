@@ -9,6 +9,8 @@ import styles from './GetInvolved.module.css';
 const LOCALITIES = [
     'Winchester City', 'Frederick County', 'Shenandoah County', 'Warren County', 'Clarke County', 'Other' ];
 
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
 // holder for involve cards
 const WAYS = [
     {
@@ -109,7 +111,7 @@ function GetInvolved() {
         setJoinStatus('submitting');
         //merge locality data, prevent both fields sending
         const { localityOther, ...rest } = joinData;
-        const payload = { ...rest, locality: joinData.locality === 'Other' ? localityOther : locality };
+        const payload = { ...rest, locality: joinData.locality === 'Other' ? localityOther : joinData.locality };
         const res = await fetch('/api/join-member', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
