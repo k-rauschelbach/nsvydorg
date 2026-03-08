@@ -1,15 +1,5 @@
 // api/send-contact.js — Vercel serverless function
-// Receives contact form submissions from the public /get-involved page and
-// forwards them as emails via Resend to the officers' inbox.
-//
-// This is a PUBLIC endpoint — no authentication required.
-// The form is publicly accessible on the website.
-//
-// Required environment variables (set in .env.local and Vercel dashboard):
-//   RESEND_API_KEY          — from resend.com dashboard (Sending access only)
-//   CONTACT_FORM_TO_EMAIL   — destination inbox, e.g. info@nsvyd.org
-//   CONTACT_FORM_FROM_EMAIL — verified sending address, e.g. contact@nsvyd.org
-//
+
 // The submitter's email is set as Reply-To so officers can reply directly
 // from their inbox without needing to copy/paste the sender's address.
 
@@ -47,7 +37,7 @@ module.exports = async function handler(req, res) {
     try {
         await resend.emails.send({
             from:    process.env.CONTACT_FORM_FROM_EMAIL,
-            to:      process.env.CONTACT_FORM_TO_EMAIL,
+            to:      process.env.CONTACT_FORM_TO_EMAIL.split(',').map(e => e.trim()),
             replyTo: email,  // officers hit Reply → goes directly to the submitter
             subject: subject
                 ? `[Contact] ${subject}`
