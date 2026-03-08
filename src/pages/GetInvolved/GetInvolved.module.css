@@ -23,6 +23,8 @@
     opacity: 0.9;
 }
 
+/* ====== Section Wrappers ====== */
+
 /* White section for the ways-to-help grid */
 .section {
     background-color: var(--color-white);
@@ -76,6 +78,181 @@
     margin: 0;
     color: var(--color-gray-600);
 }
+
+/* Button version for action cards */
+.wayCardBtn {
+    appearance: none;
+    border: none;
+    font: inherit;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.wayCardBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Active action way card */
+.wayCardActive {
+    border-top-color: var(--color-accent);
+    outline: 2px solid var(--color-accent);
+    background-color: var(--color-off-white);
+}
+
+.wayCardActive h3 {
+    color: var(--color-accent);
+}
+
+/* ====== Join form unfold ====== */
+.joinFormWrap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 500ms ease;
+}
+
+.joinFormOpen {
+    max-height: 2000px;
+}
+
+.joinSection {
+    background-color: var(--color-gray-100);
+    border-left: 4px solid var(--color-primary);
+}
+
+/* (PH!)Member signed-in version */
+.memberPlaceholder p {
+    max-width: 600px;
+    margin-bottom: var(--space-xl);
+}
+
+/* ====== Form shared styles ====== */
+.form {
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* mobile adapt */
+@media (max-width: 480px) {
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.formGroup label {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--color-gray-900);
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    color: var(--color-gray-900);
+    background-color: var(--color-white);
+    transition: border-color var(--transition-fast);
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus,
+.formGroup select:focus {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: 1px;
+    border-color: var(--color-primary-light);
+}
+
+.formGroup textarea {
+    resize: vertical;
+}
+
+.localityOther {
+    margin-top: var(--space-sm);
+}
+
+/* Availability Checkboxes */
+.availabilityGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.checkLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    cursor: pointer;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+    background-color: var(--color-white);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.checkLabel:has(input:checked) {
+    border-color: var(--color-primary);
+    background-color: var(--color-off-white);
+}
+
+/* ====== Status Messages ====== */
+.statusSuccess,
+.statusError{
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+
+.statusSuccess {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.statusError {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+/* Submit button */
+.submitBtn {
+    align-self: flex-start;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--space-sm) var(--space-xl);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.submitBtn:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.submitBtn:disabled {
+    background-color: var(--color-gray-300);
+    cursor: not-allowed;
+}
+
 
 /* Contact form -- narrower than full content width for readability */
 .form {

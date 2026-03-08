@@ -1,13 +1,21 @@
 // GetInvolved.js -- Join, volunteer, donate, and contact form page
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import styles from './GetInvolved.module.css';
 
+// possible localities
+const LOCALITIES = [
+    'Winchester City', 'Frederick County', 'Shenandoah County', 'Warren County', 'Clarke County', 'Other' ];
+
+// holder for involve cards
 const WAYS = [
     {
         id: 1,
         title: '(PH!)Join as a Member',
         desc: '(PH!)Sign up to become an official member of NSVYD(PH!)',
+        action: true,
     },
     {
         id: 2,
@@ -31,7 +39,19 @@ const WAYS = [
     },
 ];
 
+// empty form data for join
+const EMPTY_JOIN = {
+    firstName: '', lastName: '', dob: '', email: '', phone: '', locality: '', localityOther: '', registered: '', availability: [], skills: '', issues: '',
+};
+
 function GetInvolved() {
+    
+    // get logged in user role
+    const { userRole } = useAuth();
+    
+    const navigate = useNavigate();
+    
+    // ======> contact form <======
     // useState tracks each form field so React controls the inputs (controlled components)
     const [formData, setFormData] = useState({
         name: '',
@@ -64,6 +84,45 @@ function GetInvolved() {
         }
 
     }
+    
+    // ======> join form <======
+    const [joinOpen, setJoinOpen] = useState(false);
+    const [joinData, setJoinData] = useState(EMPTY_JOIN);
+    const [joinStatus, setJoinStatus] = useState('idle'); // idle, submitting, success, error
+    
+    function handleJoinChange(e) {
+        const { name, value, type, checked } = e.target;
+        if ( type === 'checkbox') {
+            setJoinData(prev => ({
+                ...prev,
+                availability: checked
+                    ? [...prev.availability, value]
+                    : prev.availability.filter(item => item !== value)
+            }));
+        } else {
+            setJoinData(prev => ({ ...prev, [name]: value }));
+        }
+    }
+    
+    async function handleJoinSubmit(e) {
+        e.preventDefault();
+        setJoinStatus('submitting');
+        //merge locality data, prevent both fields sending
+        const { localityOther, ...rest } = joinData;
+        const payload = { ...rest, locality: joinData.locality === 'Other' ? localityOther : locality };
+        const res = await fetch('/api/join-member', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+            setJoinStatus('success');
+            setJoinData(EMPTY_JOIN);
+            setJoinOpen(false);
+        } else {
+            setJoinStatus('error');
+        }
+    }
 
     return (
         <div>
@@ -81,7 +140,18 @@ function GetInvolved() {
                 <div className={styles.inner}>
                     <h2>How to Help</h2>
                     <div className={styles.waysGrid}>
-                        {WAYS.map((way) => (
+                        {WAYS.map((way) => 
+                            way.action ? (
+                                <button
+                                    key={way.id}
+                                    type="button"
+                                    className={`${styles.wayCard} ${styles.wayCardBtn} ${joinOpen ? styles.wayCardActive : ''}`}
+                                    onClick={() => setJoinOpen(prev => !prev)}
+                                    >
+                                    <h3>{way.title}</h3>
+                                    <p>{way.desc}</p>
+                                </button>
+                            ) : (
                             <div key={way.id} className={styles.wayCard}>
                                 <h3>{way.title}</h3>
                                 <p>{way.desc}</p>
@@ -90,6 +160,172 @@ function GetInvolved() {
                     </div>
                 </div>
             </section>
+
+            {/* Membership form -- unfolds when action card is selected */}
+            <div className={`${styles.joinFormWrap} ${joinOpen ? styles.joinFormOpen : ''}`}>
+                <section className={styles.joinSection}>
+                    <div className={styles.inner}>
+
+                        {(userRole === 'officer' || userRole === 'member') ? (
+
+                            /*Signed in as member view*/
+                            <div className={styles.memberPlaceholder}>
+                                <h2>(PH!)You're already a Young Dem!(PH!)</h2>
+                                <p>
+                                    (PH!)If you are looking for other groups that can help
+                                    you make a difference, check out some of our friends!(PH!)
+                                </p>
+                                <button
+                                    type={"button"}
+                                    className{styles.submitBtn}
+                                    onClick={() => navigate('/member')}
+                                    >
+                                    Want to add a new member?
+                                </button>  
+                            </div>  
+                        ) : (
+                            /* Non-member form */
+                            <>
+                                <h2>Join NSVYD</h2>
+                                <p>Interested in becoming a member? Fill out the form below and one of our officers will reach out!</p>
+
+                                {joinStatus === 'success' && (
+                                    <p class={styles.statusSuccess} role={"status"}>
+                                        Thank you! Your infomration has been sent over. We will be in touch with you soon!
+                                    </p>
+                                )}
+                                {joinStatus === 'error' && (
+                                    <p className={styles.statusError} role={"alert"}>
+                                        Something went wrong. Please try again or contact us directly.
+                                    </p>
+                                )}
+                                
+                                <form className={styles.form} onSubmit={handleJoinSubmit}>
+                                    <div className={styles.formRow}>
+                                        <div className={styles.formGroup}>
+                                            <label htmlFor={"firstName"}>First Name</label>
+                                            <input type={"text"} id ="firstName" name={"firstName"}
+                                                   placeholder={"First Name"}
+                                                   value={joinData.firstName}
+                                                   onChange={handleJoinChange}
+                                                   required />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label htmlFor={"lastName"}>Last Name</label>
+                                            <input type={"text"} id ="lastName" name={"lastName"}
+                                                   placeholder={"Last Name"}
+                                                   value={joinData.lastName}
+                                                   onChange={handleJoinChange}
+                                                   required />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className={styles.formRow}>
+                                        <div className={styles.formGroup}>
+                                            <label htmlFor={"dob"}>Date of Birth</label>
+                                            <input type={"date"} id ="dob" name={"dob"}
+                                                   value={joinData.dob}
+                                                   onChange={handleJoinChange}
+                                                   required />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label htmlFor={"phone"}>Phone Number</label>
+                                            <input type={"tel"} id ="phone" name={"phone"}
+                                                   value={joinData.phone}
+                                                   onChange={handleJoinChange}
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className={styles.formGroup}>
+                                        <label htmlFor={"email"}>Email Address</label>
+                                        <input type={"email"} id ="email" name={"email"}
+                                               placeholder={"Email Address"}
+                                               value={joinData.email}
+                                        />
+                                    </div>
+                                    
+                                    <div className={styles.formGroup}>
+                                        <label htmlFor={"locality"}>Locality</label>
+                                        <select id={"locality"} name={"locality"}
+                                                value={joinData.locality}
+                                                onChange={handleJoinChange}
+                                                required>
+                                            {LOCALITIES.map(locality => (
+                                                <option key={locality} value={locality}>{locality}</option>
+                                            ))}
+                                        </select>
+                                        {joinData.locality === 'Other' && (
+                                            <input
+                                                type={"text"}
+                                                name={"localityOther"}
+                                                placeholder={"Please specify your locality"}
+                                                value={joinData.localityOther}
+                                                onChange={handleJoinChange}
+                                                required
+                                                className={styles.localityOther}
+                                            />
+                                        )}
+                                    </div>
+                                    
+                                    <div className={styles.formGroup}>
+                                        <label htmlFor={"registered"}>Are you currently registered to vote?</label>
+                                        <select id={"registered"} name={"registered"}
+                                                value={"joinDate.registered"} onChange={handleJoinChange} required>
+                                            <option value={""}>-Select-</option>
+                                            <option value={"Yes"}>Yes</option>
+                                            <option value={"No"}>No</option>
+                                            <option value={"Not Sure"}>Not Sure</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div className={styles.formGroup}>
+                                        <label>When are you most available for meetings during the week?</label>
+                                        <div className={styles.availabilityGroup}>
+                                            {DAYS.map(day => (
+                                                <label key={day} className={styles.checkLabel}>
+                                                    <input
+                                                        type={"checkbox"}
+                                                        name={"availability"}
+                                                        value={day}
+                                                        checked={joinData.availability.includes(day)}
+                                                        onChange={handleJoinChange}
+                                                    />
+                                                    {day}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className={styles.formGroup}>
+                                        <label htmlFor={"skills"}>Do you have any specific skills or talents?</label>
+                                        <textarea id={"skills"} name={"skills"} rows={3}
+                                                  placeholder={"e.g. graphic design, canvassing, social media, etc..."}
+                                                  value={joinData.skills} onChange={handleJoinChange} />
+                                    </div>
+                                    
+                                    <div className={styles.formGroup}>
+                                        <label htmlFor={"issues"}>What issues are you most passionate about?</label>
+                                        <textarea id={"issues"} name={"issues"} rows={3}
+                                                  placeholder={"e.g. affordability, healthcare, education, etc..."}
+                                                  value={joinData.issues} onChange={handleJoinChange} />
+                                    </div>
+                                    
+                                    <button
+                                        type={"submit"}
+                                        className={styles.submitBtn}
+                                        disabled={joinStatus === 'submitting'}
+                                        >
+                                        {joinStatus === 'submitting' ? 'Submitting...' : 'Join NSVYD!'}
+                                    </button>
+                                    
+                                </form>
+                            </>
+                            )
+                        }
+                    </div>
+                </section>
+            </div>
 
             {/* Contact form */}
             <section className={styles.contactSection}>
