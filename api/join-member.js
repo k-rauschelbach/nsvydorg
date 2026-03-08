@@ -81,7 +81,7 @@ module.exports = async function handler(req, res) {
                 <div style="font-family: sans-serif; max-width: 600px; color: #1a1a2e;">
                     <h2 style="color: #1a237e; margin-top: 0;">New Membership Entry</h2>
                     <table style="width:100%;border-collapse:collapse;">
-                        ${row('Submitted',  new Date(timestamp).toLocaleString('en-US'))},
+                        ${row('Submitted',  new Date(timestamp).toLocaleString('en-US'))}
                         ${row('First Name', firstName)}
                         ${row('Last Name',  lastName)}
                         ${row('Date of Birth',  dob)}
@@ -96,7 +96,7 @@ module.exports = async function handler(req, res) {
                     <hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0 16px;" />
                     <p style="font-size:12px;color:#666;margin:0;">
                         Sent via the NSVYD website new member form.
-                        Reply to this email to respond directly to ${escapeHtml(firstName)} ${escapeHtml(lastname)} at ${escapeHtml(email)}
+                        Reply to this email to respond directly to ${escapeHtml(firstName)} ${escapeHtml(lastName)} at ${escapeHtml(email)}
                     </p>
                 </div>`,
             });

@@ -192,8 +192,8 @@ function GetInvolved() {
                                 <p>Interested in becoming a member? Fill out the form below and one of our officers will reach out!</p>
 
                                 {joinStatus === 'success' && (
-                                    <p class={styles.statusSuccess} role={"status"}>
-                                        Thank you! Your infomration has been sent over. We will be in touch with you soon!
+                                    <p className={styles.statusSuccess} role={"status"}>
+                                        Thank you! Your information has been sent over. We will be in touch with you soon!
                                     </p>
                                 )}
                                 {joinStatus === 'error' && (
@@ -244,6 +244,8 @@ function GetInvolved() {
                                         <input type={"email"} id ="email" name={"email"}
                                                placeholder={"Email Address"}
                                                value={joinData.email}
+                                               onChange={handleJoinChange}
+                                               required
                                         />
                                     </div>
                                     
@@ -273,8 +275,8 @@ function GetInvolved() {
                                     <div className={styles.formGroup}>
                                         <label htmlFor={"registered"}>Are you currently registered to vote?</label>
                                         <select id={"registered"} name={"registered"}
-                                                value={"joinDate.registered"} onChange={handleJoinChange} required>
-                                            <option value={""}>-Select-</option>
+                                                value={joinData.registered} onChange={handleJoinChange} required>
+                                            <option value={""} disabled>-Select-</option>
                                             <option value={"Yes"}>Yes</option>
                                             <option value={"No"}>No</option>
                                             <option value={"Not Sure"}>Not Sure</option>
