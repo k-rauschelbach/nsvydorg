@@ -123,6 +123,33 @@
     cursor: not-allowed;
 }
 
+/* Password field wrapper - for the show/hide toggle */
+.passwordWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.passwordWrapper input {
+    flex: 1;
+    padding-right: 2.5rem;
+}
+
+.showToggle {
+    position: absolute;
+    right: var(--space-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    padding: var(--space-xs);
+    font-family: inherit;
+    transition: color var(--transition-fast);
+}
+
 /* ============================================================
    Error message — red left-border card, same as Events.module.css
    ============================================================ */

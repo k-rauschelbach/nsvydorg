@@ -49,12 +49,20 @@ function GetInvolved() {
     }
 
     // Called when the form is submitted
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault(); // Prevent the default browser behavior (page reload)
-        // Placeholder action -- replace with Formspree, Netlify Forms, or EmailJS for real email
-        alert('Thank you for your message! We will be in touch soon.');
-        // Reset all fields back to empty strings
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        const res = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        });
+        if (!res.ok) {
+            alert('Thank you for your message! We will be in touch soon.');
+            setFormData({ name: '', email: '', subject: '', message: '' }); // reset form to empty strings
+        } else {
+            alert('Something went wrong. Please try again later.')
+        }
+
     }
 
     return (

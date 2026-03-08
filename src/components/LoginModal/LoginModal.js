@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import styles from './LoginModal.module.css';
+import {IconEye, IconEyeOff} from "../Icons/Icons";
 
 // Map Firebase error codes to user-facing messages.
 // Wrong-email and wrong-password intentionally share one message to
@@ -26,6 +27,7 @@ function LoginModal() {
 
     const [email,    setEmail]    = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error,    setError]    = useState('');
     const [loading,  setLoading]  = useState(false);
 
@@ -139,8 +141,9 @@ function LoginModal() {
 
                     <div className={styles.formGroup}>
                         <label htmlFor="login-password">Password</label>
-                        <input
-                            type="password"
+                        <div className={styles.passwordWrapper}>
+                            <input
+                            type={showPassword ? 'text' : 'password'}
                             id="login-password"
                             placeholder="Your password"
                             value={password}
@@ -148,7 +151,16 @@ function LoginModal() {
                             autoComplete="current-password"
                             required
                             disabled={loading}
-                        />
+                            />
+                            <button
+                            type={"button"}
+                            className={styles.showToggle}
+                            onClick={() => setShowPassword(v => !v)}
+                            aria-label={showPassword  ? 'Hide Password' : 'Show Password'}
+                            >
+                                {showPassword ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Error — role="alert" announces to screen readers on appear */}
