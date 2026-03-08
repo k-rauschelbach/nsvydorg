@@ -47,12 +47,18 @@ module.exports = async function handler(req, res) {
     };
     
     // best effort write to google sheet
+    // Apps Script redirects POST with 302; Node fetch switches to GET on redirect.
+    // Use redirect:'manual' and re-POST to the Location header to keep the method.
     try {
-        const scriptRes = await fetch(process.env.APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload),
+        const body = JSON.stringify(payload);
+        const headers = { 'Content-Type': 'application/json' };
+        let scriptRes = await fetch(process.env.APPS_SCRIPT_URL, {
+            method: 'POST', headers, body, redirect: 'manual',
         });
+        if (scriptRes.status === 302 || scriptRes.status === 301) {
+            const location = scriptRes.headers.get('location');
+            scriptRes = await fetch(location, { method: 'POST', headers, body });
+        }
         if (!scriptRes.ok) {
             console.error('join-member: Failed to write to Google Sheets.', scriptRes.status);
         }

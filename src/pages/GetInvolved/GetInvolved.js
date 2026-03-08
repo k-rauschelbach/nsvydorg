@@ -255,6 +255,7 @@ function GetInvolved() {
                                                 value={joinData.locality}
                                                 onChange={handleJoinChange}
                                                 required>
+                                            <option value="">-- Select your area --</option>
                                             {LOCALITIES.map(locality => (
                                                 <option key={locality} value={locality}>{locality}</option>
                                             ))}
