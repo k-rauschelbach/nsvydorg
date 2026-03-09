@@ -1,6 +1,6 @@
 // Events.js -- Events page with FullCalendar Google Calendar integration
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, memo } from 'react';
 
 // FullCalendar core React wrapper
 import FullCalendar from '@fullcalendar/react';
@@ -23,6 +23,69 @@ import styles from './Events.module.css';
 const API_KEY = process.env.REACT_APP_GOOGLE_CALENDAR_API_KEY;
 const CALENDAR_ID = process.env.REACT_APP_GOOGLE_CALENDAR_ID;
 
+// Truncate event titles longer than 64 characters.
+// Defined outside the component so the reference is stable across renders.
+function handleEventDidMount(info) {
+    const title = info.event.title;
+    if (title.length > 64) {
+        const truncated = title.slice(0, 64) + '\u2026'; // …
+        // Month / week / day grid chips
+        const chipTitle = info.el.querySelector('.fc-event-title');
+        if (chipTitle) chipTitle.textContent = truncated;
+        // List view — title is inside a <td> in the event <tr>
+        const listTitle = info.el.querySelector('.fc-list-event-title a');
+        if (listTitle) listTitle.textContent = truncated;
+    }
+}
+
+// Memoized calendar — isolated from modal state so opening/closing the modal
+// does not trigger a FullCalendar re-render and re-fetch.
+const CalendarGrid = memo(function CalendarGrid({ calendarRef, onEventClick, onDateClick }) {
+    return (
+        <FullCalendar
+            ref={calendarRef}
+            // All five plugins registered — each one unlocks a view or feature
+            plugins={[dayGridPlugin, timeGridPlugin, listPlugin, googleCalendarPlugin, interactionPlugin]}
+            // Default to month-grid on first load
+            initialView="dayGridMonth"
+            // API key for the Google Calendar API
+            googleCalendarApiKey={API_KEY}
+            // The events prop with a googleCalendarId object is how
+            // the google-calendar plugin knows which calendar to fetch
+            events={{ googleCalendarId: CALENDAR_ID }}
+            // Message shown when the visible range has no events
+            noEventsContent="No events this period."
+            // Wire up click handler — requires interactionPlugin
+            eventClick={onEventClick}
+            // Navigate to day view when clicking empty space in a day cell
+            dateClick={onDateClick}
+            // Cap visible event rows per day in month view; extras show as "+N more"
+            dayMaxEventRows={3}
+            // Toolbar layout:
+            //   left  — prev/next arrows and Today button
+            //   center — current month/week/day title
+            //   right — view-switcher buttons (Month | Week | Day | List)
+            headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
+            }}
+            // Friendlier button labels for the view switcher
+            buttonText={{
+                today: 'Today',
+                month: 'Month',
+                week:  'Week',
+                day:   'Day',
+                list:  'List',
+            }}
+            // "auto" expands the calendar to show the full grid
+            // rather than scrolling inside a fixed height
+            height="auto"
+            eventDidMount={handleEventDidMount}
+        />
+    );
+});
+
 function Events() {
     // selectedEvent holds the FullCalendar event object the user clicked,
     // or null when no modal is open
@@ -30,20 +93,19 @@ function Events() {
     const mouseDownOnBackdrop = useRef(false);
     const calendarRef = useRef(null);
 
-    // Navigate to the day view when the user clicks on empty space in a day cell
-    function handleDateClick(info) {
-        const api = calendarRef.current.getApi();
-        api.gotoDate(info.date);
-        api.changeView('timeGridDay');
-    }
-
-    // Called by FullCalendar when the user clicks an event chip in the grid
-    function handleEventClick(clickInfo) {
+    // Stable references so CalendarGrid's memo check passes when modal opens/closes
+    const handleEventClick = useCallback((clickInfo) => {
         // Without preventDefault, FullCalendar would navigate to the
         // event's Google Calendar URL instead of opening our modal
         clickInfo.jsEvent.preventDefault();
         setSelectedEvent(clickInfo.event);
-    }
+    }, []);
+
+    const handleDateClick = useCallback((info) => {
+        const api = calendarRef.current.getApi();
+        api.gotoDate(info.date);
+        api.changeView('timeGridDay');
+    }, []);
 
     // Close the modal when the user clicks on the dark backdrop
     // (but not when clicking inside the modal panel itself).
@@ -116,60 +178,10 @@ function Events() {
                             <code>.env.local</code> file, then restart the dev server.
                         </p>
                     ) : (
-                        <FullCalendar
-                            ref={calendarRef}
-                            // All five plugins registered — each one unlocks a view or feature
-                            plugins={[dayGridPlugin, timeGridPlugin, listPlugin, googleCalendarPlugin, interactionPlugin]}
-                            // Default to month-grid on first load
-                            initialView="dayGridMonth"
-                            // API key for the Google Calendar API
-                            googleCalendarApiKey={API_KEY}
-                            // The events prop with a googleCalendarId object is how
-                            // the google-calendar plugin knows which calendar to fetch
-                            events={{ googleCalendarId: CALENDAR_ID }}
-                            // Message shown when the visible range has no events
-                            noEventsContent="No events this period."
-                            // Wire up click handler — requires interactionPlugin
-                            eventClick={handleEventClick}
-                            // Navigate to day view when clicking empty space in a day cell
-                            dateClick={handleDateClick}
-                            // Cap visible event rows per day in month view; extras show as "+N more"
-                            dayMaxEventRows={3}
-                            // Toolbar layout:
-                            //   left  — prev/next arrows and Today button
-                            //   center — current month/week/day title
-                            //   right — view-switcher buttons (Month | Week | Day | List)
-                            headerToolbar={{
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
-                            }}
-                            // Friendlier button labels for the view switcher
-                            buttonText={{
-                                today: 'Today',
-                                month: 'Month',
-                                week:  'Week',
-                                day:   'Day',
-                                list:  'List',
-                            }}
-                            // "auto" expands the calendar to show the full grid
-                            // rather than scrolling inside a fixed height
-                            height="auto"
-                            // Truncate event titles longer than 30 characters.
-                            // eventDidMount fires after each event element is added to the DOM,
-                            // covering all views (month, week, day, list).
-                            eventDidMount={(info) => {
-                                const title = info.event.title;
-                                if (title.length > 64) {
-                                    const truncated = title.slice(0, 64) + '\u2026'; // …
-                                    // Month / week / day grid chips
-                                    const chipTitle = info.el.querySelector('.fc-event-title');
-                                    if (chipTitle) chipTitle.textContent = truncated;
-                                    // List view — title is inside a <td> in the event <tr>
-                                    const listTitle = info.el.querySelector('.fc-list-event-title a');
-                                    if (listTitle) listTitle.textContent = truncated;
-                                }
-                            }}
+                        <CalendarGrid
+                            calendarRef={calendarRef}
+                            onEventClick={handleEventClick}
+                            onDateClick={handleDateClick}
                         />
                     )}
 
