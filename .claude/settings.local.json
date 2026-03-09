@@ -6,7 +6,9 @@
       "Bash(netstat -ano)",
       "Bash(findstr \":3000\")",
       "Bash(taskkill /PID 26020 /F)",
-      "Bash(cmd //c \"taskkill /PID 26020 /F\")"
+      "Bash(cmd //c \"taskkill /PID 26020 /F\")",
+      "Bash(npm install)",
+      "Bash(npm audit)"
     ]
   }
 }
