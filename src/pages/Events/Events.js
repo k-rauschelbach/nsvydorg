@@ -28,6 +28,14 @@ function Events() {
     // or null when no modal is open
     const [selectedEvent, setSelectedEvent] = useState(null);
     const mouseDownOnBackdrop = useRef(false);
+    const calendarRef = useRef(null);
+
+    // Navigate to the day view when the user clicks on empty space in a day cell
+    function handleDateClick(info) {
+        const api = calendarRef.current.getApi();
+        api.gotoDate(info.date);
+        api.changeView('timeGridDay');
+    }
 
     // Called by FullCalendar when the user clicks an event chip in the grid
     function handleEventClick(clickInfo) {
@@ -109,6 +117,7 @@ function Events() {
                         </p>
                     ) : (
                         <FullCalendar
+                            ref={calendarRef}
                             // All five plugins registered — each one unlocks a view or feature
                             plugins={[dayGridPlugin, timeGridPlugin, listPlugin, googleCalendarPlugin, interactionPlugin]}
                             // Default to month-grid on first load
@@ -122,6 +131,10 @@ function Events() {
                             noEventsContent="No events this period."
                             // Wire up click handler — requires interactionPlugin
                             eventClick={handleEventClick}
+                            // Navigate to day view when clicking empty space in a day cell
+                            dateClick={handleDateClick}
+                            // Cap visible event rows per day in month view; extras show as "+N more"
+                            dayMaxEventRows={3}
                             // Toolbar layout:
                             //   left  — prev/next arrows and Today button
                             //   center — current month/week/day title
