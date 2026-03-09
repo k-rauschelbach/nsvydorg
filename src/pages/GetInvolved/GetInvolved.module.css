@@ -99,7 +99,7 @@
 /* Active action way card */
 .wayCardActive {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(0, 82, 165, 0.22), 0 2px 8px rgba(0, 82, 165, 0.12);
+    box-shadow: 8px 8px 28px rgba(0, 82, 165, 0.22), 0 2px 8px rgba(0, 82, 165, 0.12);
     background: linear-gradient(160deg, var(--color-off-white) 0%, #ffffff 100%);
 }
 

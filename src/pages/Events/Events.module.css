@@ -120,11 +120,22 @@
     text-decoration: none;
 }
 
+/* softly light hovered day box */
+:global(.fc .fc-daygrid-day:hover) {
+    background-color: var(--color-gray-100) !important;
+}
+
 /* Day number in the top-right corner of each cell */
 :global(.fc .fc-daygrid-day-number) {
     color: var(--color-gray-600);
     font-size: var(--font-size-sm);
     padding: var(--space-xs);
+    cursor: default;
+    text-decoration: none;
+}
+
+:global(.fc .fc-daygrid-day-number:hover) {
+    text-decoration: none;
 }
 
 /* Today's cell — remove background tint entirely; the blue circle on the
