@@ -153,18 +153,18 @@
 
 /* Event chips shown inside each day cell */
 :global(.fc .fc-event) {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
+    border: none;
     color: var(--color-white);
     border-radius: var(--border-radius);
     font-size: var(--font-size-sm);
+    padding: 2px 5px;
     cursor: pointer;
     transition: background-color var(--transition-fast);
 }
 
 :global(.fc .fc-event:hover) {
-    background-color: var(--color-primary-dark);
-    border-color: var(--color-primary-dark);
+    background-color: var(--color-primary);
     color: var(--color-white);
 }
 
@@ -180,14 +180,19 @@
     font-weight: 600;
 }
 
-/* Allow long event titles to wrap instead of truncating with an ellipsis.
-   FullCalendar defaults to white-space: nowrap + overflow: hidden on titles. */
-:global(.fc .fc-event-title) {
-    white-space: normal;  /* let text wrap onto multiple lines */
-    overflow: visible;
+/* Keep event chips to a single line in month view — prevents row stretching.
+   The eventDidMount handler already truncates titles at 64 chars with "…". */
+:global(.fc .fc-daygrid-event .fc-event-title) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* In week/day (timegrid) view, also let the title container expand vertically */
+/* In week/day (timegrid) view let titles wrap — more vertical space available */
+:global(.fc .fc-timegrid-event .fc-event-title) {
+    white-space: normal;
+    overflow: visible;
+}
 :global(.fc .fc-timegrid-event .fc-event-title-container) {
     overflow: visible;
 }
