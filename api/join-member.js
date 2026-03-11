@@ -20,11 +20,11 @@ module.exports = async function handler(req, res) {
     }
 
     const {
-        firstName, lastName, dob, email, phone, locality, registered, availability, skills, issues,
+        name, dob, email, phone, locality, registered, availability, skills, issues,
     } = req.body ?? {};
 
     //check for required fields -- name, dob, email, locality, registered to vote
-    if (!firstName || !lastName || !dob || !email || !locality || !registered) {
+    if (!name || !dob || !email || !locality || !registered) {
         return res.status(400).json({error: 'Required fields are missing.'});
     }
     
@@ -38,7 +38,7 @@ module.exports = async function handler(req, res) {
     const timestamp = new Date().toISOString();
     const payload = {
         timestamp,
-        firstName, lastName, dob, email,
+        name, dob, email,
         phone: phone || '',
         locality, registered,
         availability: Array.isArray(availability) ? availability : [],
@@ -82,14 +82,13 @@ module.exports = async function handler(req, res) {
             from:    process.env.CONTACT_FORM_FROM_EMAIL,
             to:      process.env.CONTACT_FORM_TO_EMAIL.split(',').map(e => e.trim()),
             replyTo: email,
-            subject: `[New Member Request] ${firstName} ${lastName}`,
+            subject: `[New Member Request] ${name}`,
             html: `
                 <div style="font-family: sans-serif; max-width: 600px; color: #1a1a2e;">
                     <h2 style="color: #1a237e; margin-top: 0;">New Membership Entry</h2>
                     <table style="width:100%;border-collapse:collapse;">
                         ${row('Submitted',  new Date(timestamp).toLocaleString('en-US'))}
-                        ${row('First Name', firstName)}
-                        ${row('Last Name',  lastName)}
+                        ${row('Name', name)}
                         ${row('Date of Birth',  dob)}
                         ${row('Email',  email)}
                         ${row('Phone',  phone)}
@@ -102,7 +101,7 @@ module.exports = async function handler(req, res) {
                     <hr style="border:none;border-top:1px solid #e0e0e0;margin:24px 0 16px;" />
                     <p style="font-size:12px;color:#666;margin:0;">
                         Sent via the NSVYD website new member form.
-                        Reply to this email to respond directly to ${escapeHtml(firstName)} ${escapeHtml(lastName)} at ${escapeHtml(email)}
+                        Reply to this email to respond directly to ${escapeHtml(name)} at ${escapeHtml(email)}
                     </p>
                 </div>`,
             });
