@@ -120,6 +120,7 @@
     text-decoration: none;
 }
 
+
 /* softly light hovered day box */
 :global(.fc .fc-daygrid-day:hover) {
     background-color: var(--color-gray-100) !important;

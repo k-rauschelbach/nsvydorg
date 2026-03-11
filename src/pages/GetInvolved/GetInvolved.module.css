@@ -119,6 +119,72 @@
     border-left: 4px solid var(--color-primary);
 }
 
+/* Follow Section and Social Banners */
+.followSection {
+    background-color: var(--color-gray-100);
+    border-left: 4px solid var(--color-primary);
+}
+
+.socialBanners {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-width: 600px;
+}
+
+.socialBanner {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl) var(--space-xl);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-xl);
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-white);
+    text-decoration: none;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.socialBanner:hover {
+    opacity: 0.9;
+    transform: translateX(4px);
+    text-decoration: none;
+}
+
+/* Chevron accent -- large, clipping top/bottom, mirroring logo position on the left */
+.socialChevron {
+    position: absolute;
+    left: var(--space-3xl);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 90px;
+    height: 200px;
+    fill: currentColor;
+    opacity: 0.18;
+    pointer-events: none;
+}
+
+/* Watermark logo -- large, semi-transparent, positioned right */
+.socialLogo {
+    position: absolute;
+    right: var(--space-3xl);
+    top: 50%;
+    transform: translateY(-40%);
+    width: 90px;
+    height: 90px;
+    fill: currentColor;
+    opacity: 0.18;
+    pointer-events: none;
+}
+
+.socialFacebook  { background-color: #1877f2; }
+.socialInstagram { background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4); }
+.socialBluesky   { background-color: #0085ff; }
+
 /* (PH!)Member signed-in version */
 .memberPlaceholder p {
     max-width: 600px;

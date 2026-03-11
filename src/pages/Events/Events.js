@@ -78,6 +78,8 @@ const CalendarGrid = memo(function CalendarGrid({ calendarRef, onEventClick, onD
                 day:   'Day',
                 list:  'List',
             }}
+            // Don't pad the grid to 6 rows — skip any trailing row of next-month days
+            fixedWeekCount={false}
             // "auto" expands the calendar to show the full grid
             // rather than scrolling inside a fixed height
             height="auto"

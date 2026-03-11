@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "nsvyd.org dev",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/react-scripts/bin/react-scripts.js", "start"],
-      "port": 3000
+      "name": "nsvyd.org",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set PORT=3002 && node node_modules/react-scripts/bin/react-scripts.js start"],
+      "port": 3002
     }
   ]
 }

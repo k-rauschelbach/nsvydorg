@@ -17,7 +17,7 @@ const WAYS = [
         id: 1,
         title: '(PH!)Join as a Member',
         desc: '(PH!)Sign up to become an official member of NSVYD(PH!)',
-        action: true,
+        action: 'join',
     },
     {
         id: 2,
@@ -38,6 +38,7 @@ const WAYS = [
         id: 5,
         title: '(PH!)Follow Us',
         desc: '(PH!)Stay connected on Facebook, Instagram, and BlueSky(PH!)',
+        action: 'follow',
     },
 ];
 
@@ -87,8 +88,11 @@ function GetInvolved() {
 
     }
     
+    // ======> action panels <======
+    // null = none , 'join' = member form , 'follow' = social media links'
+    const [activePanel, setActivePanel] = useState(null);
+    
     // ======> join form <======
-    const [joinOpen, setJoinOpen] = useState(false);
     const [joinData, setJoinData] = useState(EMPTY_JOIN);
     const [joinStatus, setJoinStatus] = useState('idle'); // idle, submitting, success, error
     
@@ -120,7 +124,7 @@ function GetInvolved() {
         if (res.ok) {
             setJoinStatus('success');
             setJoinData(EMPTY_JOIN);
-            setJoinOpen(false);
+            setActivePanel(null);
         } else {
             setJoinStatus('error');
         }
@@ -147,8 +151,8 @@ function GetInvolved() {
                                 <button
                                     key={way.id}
                                     type="button"
-                                    className={`${styles.wayCard} ${styles.wayCardBtn} ${joinOpen ? styles.wayCardActive : ''}`}
-                                    onClick={() => setJoinOpen(prev => !prev)}
+                                    className={`${styles.wayCard} ${styles.wayCardBtn} ${activePanel === way.action ? styles.wayCardActive : ''}`}
+                                    onClick={() => setActivePanel(prev => prev === way.action ? null : way.action)}
                                     >
                                     <h3>{way.title}</h3>
                                     <p>{way.desc}</p>
@@ -164,7 +168,7 @@ function GetInvolved() {
             </section>
 
             {/* Membership form -- unfolds when action card is selected */}
-            <div className={`${styles.joinFormWrap} ${joinOpen ? styles.joinFormOpen : ''}`}>
+            <div className={`${styles.joinFormWrap} ${activePanel === 'join' ? styles.joinFormOpen : ''}`}>
                 <section className={styles.joinSection}>
                     <div className={styles.inner}>
 
@@ -330,6 +334,60 @@ function GetInvolved() {
                         }
                     </div>
                 </section>
+            </div>
+
+            {/* Follow us panel -- unfolds when action card is selected */}
+            <div className={`${styles.joinFormWrap} ${activePanel === 'follow' ? styles.joinFormOpen : ''}`}>
+                 <section className={styles.followSection}>
+                     <div className={styles.inner}>
+                         <h2>Follow Us</h2>
+                         <p>(PH!)Stay connected to what we're up to on our social media accounts!(PH!)</p>
+                         <div className={styles.socialBanners}>
+                            <a
+                                href={"https://www.facebook.com"}
+                                target={"_blank"}
+                                rel={"noopener noreferrer"}
+                                className={`${styles.socialBanner} ${styles.socialFacebook}`}
+                            >
+                                <svg className={styles.socialChevron} viewBox="0 0 9 20" aria-hidden="true">
+                                    <path d="M0,0 L8.5,10 L0,20 L0,15 L3.5,10 L0,5 Z"/>
+                                </svg>
+                                <svg className={styles.socialLogo} viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                                <span>Facebook</span>
+                            </a>
+                             <a
+                                 href={"https://instagram.com"}
+                                 target={"_blank"}
+                                 rel={"noopener noreferrer"}
+                                 className={`${styles.socialBanner} ${styles.socialInstagram}`}
+                             >
+                                 <svg className={styles.socialChevron} viewBox="0 0 9 20" aria-hidden="true">
+                                     <path d="M0,0 L8.5,10 L0,20 L0,15 L3.5,10 L0,5 Z"/>
+                                 </svg>
+                                 <svg className={styles.socialLogo} viewBox="0 0 24 24" aria-hidden="true">
+                                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                                 </svg>
+                                 <span>Instagram</span>
+                             </a>
+                             <a
+                                 href={"https://bsky.app"}
+                                 target={"_blank"}
+                                 rel={"noopener noreferrer"}
+                                 className={`${styles.socialBanner} ${styles.socialBluesky}`}
+                             >
+                                 <svg className={styles.socialChevron} viewBox="0 0 9 20" aria-hidden="true">
+                                     <path d="M0,0 L8.5,10 L0,20 L0,15 L3.5,10 L0,5 Z"/>
+                                 </svg>
+                                 <svg className={styles.socialLogo} viewBox="0 0 24 24" aria-hidden="true">
+                                     <path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.175 7.412 4.539 4.256-3.81.516-6.658-3.584-7.476-.436-.063-.873-.118-1.312-.155.433.038.861.098 1.312.155 2.754.67 5.135-.79 5.762-3.655.207-.959.388-6.282.388-6.282C21.986 2.96 21.644 1.8 21 1.42c-.706-.408-1.557-.293-3.002.682-2.82 1.95-5.703 6.232-6 8.698z"/>
+                                 </svg>
+                                 <span>BlueSky</span>
+                             </a>
+                         </div>
+                     </div>
+                 </section>
             </div>
 
             {/* Contact form */}
