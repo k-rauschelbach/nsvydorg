@@ -316,6 +316,27 @@
     cursor: not-allowed;
 }
 
+/* DOB three-select row */
+.dobRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    gap: var(--space-sm);
+}
+
+/* Required field asterisk */
+.reqMark {
+    color: #c62828;
+    margin-left: 2px;
+    font-weight: 700;
+}
+
+/* "* Required" legend above the form */
+.reqLegend {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin: 0 0 var(--space-sm);
+}
+
 
 /* Contact form -- narrower than full content width for readability */
 .form {

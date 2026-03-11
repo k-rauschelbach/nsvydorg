@@ -11,6 +11,16 @@ const LOCALITIES = [
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+const MONTHS = [
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December'
+];
+
+function daysInMonth(month, year) {
+    if (!month) return 31;
+    return new Date(year || 2000, Number(month), 0).getDate();
+}
+
 // holder for involve cards
 const WAYS = [
     {
@@ -44,7 +54,11 @@ const WAYS = [
 
 // empty form data for join
 const EMPTY_JOIN = {
-    firstName: '', lastName: '', dob: '', email: '', phone: '', locality: '', localityOther: '', registered: '', availability: [], skills: '', issues: '',
+    firstName: '', lastName: '',
+    dobMonth: '', dobDay: '', dobYear: '',
+    email: '', phone: '',
+    locality: '', localityOther: '',
+    registered: '', availability: [], skills: '', issues: '',
 };
 
 function GetInvolved() {
@@ -98,13 +112,24 @@ function GetInvolved() {
     
     function handleJoinChange(e) {
         const { name, value, type, checked } = e.target;
-        if ( type === 'checkbox') {
+        if (type === 'checkbox') {
             setJoinData(prev => ({
                 ...prev,
                 availability: checked
                     ? [...prev.availability, value]
                     : prev.availability.filter(item => item !== value)
             }));
+        } else if (name === 'dobMonth' || name === 'dobYear') {
+            // auto-reset day if it exceeds the new month's max days
+            setJoinData(prev => {
+                const updated = { ...prev, [name]: value };
+                const max = daysInMonth(
+                    name === 'dobMonth' ? value : prev.dobMonth,
+                    name === 'dobYear'  ? value : prev.dobYear
+                );
+                if (updated.dobDay && Number(updated.dobDay) > max) updated.dobDay = '';
+                return updated;
+            });
         } else {
             setJoinData(prev => ({ ...prev, [name]: value }));
         }
@@ -113,9 +138,17 @@ function GetInvolved() {
     async function handleJoinSubmit(e) {
         e.preventDefault();
         setJoinStatus('submitting');
-        //merge locality data, prevent both fields sending
-        const { localityOther, ...rest } = joinData;
-        const payload = { ...rest, locality: joinData.locality === 'Other' ? localityOther : joinData.locality };
+        //merge locality data, combine DOB parts, and combine name into one field
+        const { localityOther, dobMonth, dobDay, dobYear, firstName, lastName, ...rest } = joinData;
+        const dob = (dobYear && dobMonth && dobDay)
+            ? `${dobYear}-${String(dobMonth).padStart(2,'0')}-${String(dobDay).padStart(2,'0')}`
+            : '';
+        const payload = {
+            ...rest,
+            name: `${firstName} ${lastName}`.trim(),
+            dob,
+            locality: joinData.locality === 'Other' ? localityOther : joinData.locality,
+        };
         const res = await fetch('/api/join-member', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -206,10 +239,11 @@ function GetInvolved() {
                                     </p>
                                 )}
                                 
+                                <p className={styles.reqLegend}><span aria-hidden="true">*</span> Required</p>
                                 <form className={styles.form} onSubmit={handleJoinSubmit}>
                                     <div className={styles.formRow}>
                                         <div className={styles.formGroup}>
-                                            <label htmlFor={"firstName"}>First Name</label>
+                                            <label htmlFor={"firstName"}>First Name <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                             <input type={"text"} id ="firstName" name={"firstName"}
                                                    placeholder={"First Name"}
                                                    value={joinData.firstName}
@@ -217,7 +251,7 @@ function GetInvolved() {
                                                    required />
                                         </div>
                                         <div className={styles.formGroup}>
-                                            <label htmlFor={"lastName"}>Last Name</label>
+                                            <label htmlFor={"lastName"}>Last Name <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                             <input type={"text"} id ="lastName" name={"lastName"}
                                                    placeholder={"Last Name"}
                                                    value={joinData.lastName}
@@ -228,11 +262,36 @@ function GetInvolved() {
                                     
                                     <div className={styles.formRow}>
                                         <div className={styles.formGroup}>
-                                            <label htmlFor={"dob"}>Date of Birth</label>
-                                            <input type={"date"} id ="dob" name={"dob"}
-                                                   value={joinData.dob}
-                                                   onChange={handleJoinChange}
-                                                   required />
+                                            <label htmlFor={"dobMonth"}>Date of Birth <span className={styles.reqMark} aria-hidden="true">*</span></label>
+                                            <div className={styles.dobRow}>
+                                                <select id={"dobMonth"} name={"dobMonth"} value={joinData.dobMonth}
+                                                        onChange={handleJoinChange} required aria-label="Month">
+                                                    <option value="">Month</option>
+                                                    {MONTHS.map((m, i) => (
+                                                        <option key={m} value={i + 1}>{m}</option>
+                                                    ))}
+                                                </select>
+                                                <select name={"dobDay"} value={joinData.dobDay}
+                                                        onChange={handleJoinChange} required aria-label="Day">
+                                                    <option value="">Day</option>
+                                                    {Array.from(
+                                                        { length: daysInMonth(joinData.dobMonth, joinData.dobYear) },
+                                                        (_, i) => i + 1
+                                                    ).map(d => (
+                                                        <option key={d} value={d}>{d}</option>
+                                                    ))}
+                                                </select>
+                                                <select name={"dobYear"} value={joinData.dobYear}
+                                                        onChange={handleJoinChange} required aria-label="Year">
+                                                    <option value="">Year</option>
+                                                    {Array.from(
+                                                        { length: new Date().getFullYear() - 1919 },
+                                                        (_, i) => new Date().getFullYear() - i
+                                                    ).map(y => (
+                                                        <option key={y} value={y}>{y}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                         </div>
                                         <div className={styles.formGroup}>
                                             <label htmlFor={"phone"}>Phone Number</label>
@@ -244,7 +303,7 @@ function GetInvolved() {
                                     </div>
                                     
                                     <div className={styles.formGroup}>
-                                        <label htmlFor={"email"}>Email Address</label>
+                                        <label htmlFor={"email"}>Email Address <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                         <input type={"email"} id ="email" name={"email"}
                                                placeholder={"Email Address"}
                                                value={joinData.email}
@@ -254,7 +313,7 @@ function GetInvolved() {
                                     </div>
                                     
                                     <div className={styles.formGroup}>
-                                        <label htmlFor={"locality"}>Locality</label>
+                                        <label htmlFor={"locality"}>Locality <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                         <select id={"locality"} name={"locality"}
                                                 value={joinData.locality}
                                                 onChange={handleJoinChange}
@@ -278,7 +337,7 @@ function GetInvolved() {
                                     </div>
                                     
                                     <div className={styles.formGroup}>
-                                        <label htmlFor={"registered"}>Are you currently registered to vote?</label>
+                                        <label htmlFor={"registered"}>Are you currently registered to vote? <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                         <select id={"registered"} name={"registered"}
                                                 value={joinData.registered} onChange={handleJoinChange} required>
                                             <option value={""} disabled>-Select-</option>
