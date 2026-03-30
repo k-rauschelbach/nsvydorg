@@ -4,10 +4,16 @@ import styles from './Home.module.css';
 function Home() {
     return (
         <div>
-            
             <section className={styles.hero}>
+                <div className={styles.heroImageFrame}>
+                    <img
+                        src="/HomeBannerGhostCropped.png"
+                        alt="Emerald Pond with NSVYD Logo"
+                        className={styles.heroImage}
+                    />
+                    <h1 className={styles.heroTitle}>(PH!)Forging a Bright Future for the Shenandoah Valley(PH!)</h1>
+                </div>
                 <div className={styles.heroInner}>
-                    <h1>(PH!)Forging a Bright Future for the Shenandoah Valley(PH!)</h1>
                     <p>
                         (PH!)The Northern Shenandoah Valley Young Democrats organize, empower, and support
                         the future generations of Clarke, Frederick, Winchester, Shenandoah, and Warren Counties(PH!)

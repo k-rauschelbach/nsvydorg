@@ -8,25 +8,27 @@ function Header() {
     const { currentUser, openLoginModal } = useAuth();
     const navigate = useNavigate();
 
+    const navClass = ({ isActive }) => isActive ? styles.active : '';
+
     return (
         <header className={styles.header}>
             <div className={styles.inner}>
-                {/*Site logo*/}
-                <NavLink to="/" className={styles.brand}>
-                    <span className={styles.brandAbbr}>NSVYD</span>
-                    <span className={styles.brandFull}>
-                        Northern Shenandoah Valley Young Democrats
-                    </span>
+
+                {/* Left nav links */}
+                <nav className={styles.navLeft}>
+                    <NavLink to="/about"   className={navClass}>About Us</NavLink>
+                    <NavLink to="/events"  className={navClass}>Events</NavLink>
+                </nav>
+
+                {/* Center logo bug — links home */}
+                <NavLink to="/" className={styles.logoBug}>
+                    <img src="/NSVYD_Transparent_Logo.png" alt="NSVYD Home" />
                 </NavLink>
 
-                {/*Nav links + member auth button*/}
-                <nav className={styles.nav}>
-                    <NavLink to="/"             className={({isActive}) => isActive ? styles.active : ''}>Home</NavLink>
-                    <NavLink to="/about"        className={({isActive}) => isActive ? styles.active : ''}>About Us</NavLink>
-                    <NavLink to="/events"       className={({isActive}) => isActive ? styles.active : ''}>Events</NavLink>
-                    <NavLink to="/get-involved" className={({isActive}) => isActive ? styles.active : ''}>Get Involved</NavLink>
+                {/* Right nav links */}
+                <nav className={styles.navRight}>
+                    <NavLink to="/get-involved" className={navClass}>Get Involved</NavLink>
 
-                    {/* Auth button — ghost when logged out, filled white when logged in */}
                     {currentUser ? (
                         <button
                             className={styles.memberBtnActive}
