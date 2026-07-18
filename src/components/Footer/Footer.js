@@ -19,7 +19,7 @@ function Footer() {
                 <div className={styles.links}>
                     <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
                     <a href="https://www.instagram.com//" target="_blank" rel="noopener noreferrer">Instagram</a>
-                    <a href="https://www.bksy.app" target="_blank" rel="noopener noreferrer">BlueSky</a>
+                    <a href="https://bsky.app" target="_blank" rel="noopener noreferrer">BlueSky</a>
                 </div>
                 {/* ownership stamp */}
                 <p className={styles.copy}>

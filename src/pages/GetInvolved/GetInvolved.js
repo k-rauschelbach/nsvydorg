@@ -88,18 +88,22 @@ function GetInvolved() {
     // Called when the form is submitted
     async function handleSubmit(e) {
         e.preventDefault(); // Prevent the default browser behavior (page reload)
-        const res = await fetch('/api/send-contact', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData),
-        });
-        if (res.ok) {
-            alert('Thank you for your message! We will be in touch soon.');
-            setFormData({ name: '', email: '', subject: '', message: '' }); // reset form to empty strings
-        } else {
+        try {
+            const res = await fetch('/api/send-contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+            if (res.ok) {
+                alert('Thank you for your message! We will be in touch soon.');
+                setFormData({ name: '', email: '', subject: '', message: '' }); // reset form to empty strings
+            } else {
+                alert('Something went wrong. Please try again later.')
+            }
+        } catch {
+            // fetch itself failed (network error) -- surface the same message
             alert('Something went wrong. Please try again later.')
         }
-
     }
     
     // ======> action panels <======
@@ -149,16 +153,22 @@ function GetInvolved() {
             dob,
             locality: joinData.locality === 'Other' ? localityOther : joinData.locality,
         };
-        const res = await fetch('/api/join-member', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-        if (res.ok) {
-            setJoinStatus('success');
-            setJoinData(EMPTY_JOIN);
-            setActivePanel(null);
-        } else {
+        try {
+            const res = await fetch('/api/join-member', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+                setJoinStatus('success');
+                setJoinData(EMPTY_JOIN);
+                setActivePanel(null);
+            } else {
+                setJoinStatus('error');
+            }
+        } catch {
+            // fetch itself failed (network error) -- without this the form
+            // would be stuck on 'submitting' with the button disabled
             setJoinStatus('error');
         }
     }

@@ -51,6 +51,9 @@ code {
   --max-width: 1100px; /* centered with margin: auto */
   --border-radius:  6px;
   --border-radius-lg: 12px;
+  /* Top padding for page banners: clears the fixed header (~108px)
+     plus the logo bug hanging ~50px below it, with breathing room */
+  --header-clearance: 184px;
   
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
@@ -59,6 +62,13 @@ code {
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
+}
+
+/* Mobile: header logo is 100px (hangs ~30px), so less clearance needed */
+@media (max-width: 700px) {
+  :root {
+    --header-clearance: 132px;
+  }
 }
 
 /* Border-box sizing global */

@@ -12,7 +12,7 @@
 .headerInner {
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: var(--space-2xl) var(--space-lg);
+    padding: var(--header-clearance) var(--space-lg) var(--space-2xl);
 }
 
 .pageHeader h1 {

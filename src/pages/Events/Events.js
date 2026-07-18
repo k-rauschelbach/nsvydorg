@@ -128,7 +128,7 @@ function Events() {
     // under extendedProps in FullCalendar's event object.
     const modalTitle = selectedEvent ? selectedEvent.title : '';
 
-    const modalStart = selectedEvent
+    const modalStart = selectedEvent?.start
         ? selectedEvent.start.toLocaleString('en-US', {
               weekday: 'long',
               year: 'numeric',

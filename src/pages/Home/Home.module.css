@@ -7,7 +7,9 @@
 .heroImageFrame {
     position: relative;
     width: 100%;
-    margin: 103px auto;
+    /* Top margin clears the fixed header (~108px tall); small bottom margin
+       keeps the intro text close under the image */
+    margin: 111px auto var(--space-md);
     border-top: 5px solid var(--color-white);
     border-bottom: 5px solid var(--color-white);
     box-shadow:
@@ -46,8 +48,8 @@
     align-items: center;
     justify-content: left;
     max-width: var(--max-width);
-    margin: var(--space-lg) auto;
-    padding: var(--space-xl) var(--space-2xl);
+    margin: 0 auto;
+    padding: var(--space-lg) var(--space-2xl) var(--space-xl);
     gap: var(--space-xl);
     width: 80%;
 }
