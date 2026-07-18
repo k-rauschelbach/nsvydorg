@@ -37,6 +37,16 @@ export const LOCALITIES = {
     '171': { name: 'Shenandoah County', color: '#5aa876' },
 };
 
+// ── House of Delegates map colors ───────────────────────────
+// Fill colors for the "color by House District" map mode, keyed by
+// district number. Deliberately a different palette from LOCALITIES so
+// the two modes aren't mistaken for each other.
+export const HD_COLORS = {
+    31: '#4a9e8e',  // teal — Clarke, most of Warren, western Frederick
+    32: '#d98841',  // orange — Winchester + eastern Frederick
+    33: '#7d6bc9',  // violet — Shenandoah + southern Warren
+};
+
 // ── Local district names ────────────────────────────────────
 // Virginia precinct numbers encode the local election district in
 // their first digit (e.g. Frederick "502 - Bass-Hoover" is in county

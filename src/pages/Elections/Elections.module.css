@@ -98,6 +98,60 @@
 
 
 /* ============================================================
+   Map color mode toggle
+   ============================================================ */
+
+.mapControls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.toggleLabel {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+}
+
+.toggleBtn {
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--color-gray-600);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+/* Join the buttons into a single segmented control */
+.toggleBtn:first-child {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.toggleBtn:last-child {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    border-left: none;
+}
+
+.toggleBtn:hover {
+    background-color: var(--color-gray-100);
+}
+
+.toggleActive {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.toggleActive:hover {
+    background-color: var(--color-primary);
+}
+
+
+/* ============================================================
    Map + panel layout
    Two columns on desktop, stacked on mobile
    ============================================================ */

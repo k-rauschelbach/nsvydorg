@@ -18,6 +18,7 @@ import 'leaflet/dist/leaflet.css';
 
 import {
     LOCALITIES,
+    HD_COLORS,
     ELECTION,
     precinctInfo,
     racesForPrecinct,
@@ -114,15 +115,6 @@ async function geocode(address) {
 
 // ── Precinct polygon styling ────────────────────────────────
 
-function baseStyle(feature) {
-    return {
-        fillColor: LOCALITIES[feature.properties.COUNTYFP]?.color ?? '#888888',
-        fillOpacity: 0.45,
-        color: '#ffffff',
-        weight: 1.5,
-    };
-}
-
 const HOVER_STYLE = { fillOpacity: 0.7, weight: 2.5 };
 const SELECTED_STYLE = { fillOpacity: 0.75, weight: 3, color: '#1f2937' };
 
@@ -155,6 +147,30 @@ function Elections() {
         clearTimeout(hoverTimerRef.current);
         layersRef.current.forEach((layer) => layer.closeTooltip());
     }, []);
+
+    // Map color mode: 'locality' (default) or 'hd' (House of Delegates).
+    // A ref mirrors the state so Leaflet event handlers — bound once at
+    // layer creation — always style with the current mode.
+    const [colorMode, setColorMode] = useState('locality');
+    const colorModeRef = useRef('locality');
+
+    const styleFor = useCallback((feature) => {
+        const props = feature.properties;
+        const fill = colorModeRef.current === 'hd'
+            ? HD_COLORS[precinctInfo(props).hd] ?? '#888888'
+            : LOCALITIES[props.COUNTYFP]?.color ?? '#888888';
+        return { fillColor: fill, fillOpacity: 0.45, color: '#ffffff', weight: 1.5 };
+    }, []);
+
+    // Restyle every non-selected precinct when the color mode changes
+    useEffect(() => {
+        colorModeRef.current = colorMode;
+        layersRef.current.forEach((layer) => {
+            if (selectedLayerRef.current?.layer !== layer) {
+                layer.setStyle(styleFor(layer.feature));
+            }
+        });
+    }, [colorMode, styleFor]);
 
     // Fetch the precinct polygons once on mount. Town boundaries load
     // alongside; they refine address searches (exact in-town / out-of-town),
@@ -217,7 +233,7 @@ function Elections() {
         // Restore the previously selected precinct's base style
         if (selectedLayerRef.current) {
             const prev = selectedLayerRef.current;
-            prev.layer.setStyle(baseStyle(prev.feature));
+            prev.layer.setStyle(styleFor(prev.feature));
         }
         layer.setStyle(SELECTED_STYLE);
         layer.bringToFront();
@@ -226,12 +242,12 @@ function Elections() {
         if (map) {
             map.fitBounds(layer.getBounds().pad(0.35));
         }
-    }, [map, closeAllTooltips]);
+    }, [map, closeAllTooltips, styleFor]);
 
     const clearSelection = useCallback(() => {
         if (selectedLayerRef.current) {
             const prev = selectedLayerRef.current;
-            prev.layer.setStyle(baseStyle(prev.feature));
+            prev.layer.setStyle(styleFor(prev.feature));
             selectedLayerRef.current = null;
         }
         setSelected(null);
@@ -240,7 +256,7 @@ function Elections() {
         if (map && geoData) {
             map.fitBounds(L.geoJSON(geoData).getBounds(), { padding: [12, 12] });
         }
-    }, [map, geoData]);
+    }, [map, geoData, styleFor]);
 
     // Wire hover + click handlers on every precinct polygon
     const onEachFeature = useCallback((feature, layer) => {
@@ -289,12 +305,12 @@ function Elections() {
                 clearTimeout(hoverTimerRef.current);
                 layer.closeTooltip();
                 if (selectedLayerRef.current?.layer !== layer) {
-                    layer.setStyle(baseStyle(feature));
+                    layer.setStyle(styleFor(feature));
                 }
             },
             click: () => selectFeature(feature, layer),
         });
-    }, [selectFeature]);
+    }, [selectFeature, styleFor]);
 
     // Address search: geocode → point-in-polygon → select that precinct
     async function handleSearch(e) {
@@ -381,6 +397,27 @@ function Elections() {
                     </form>
                     {searchError && <p className={styles.searchError}>{searchError}</p>}
 
+                    {/* Map color mode toggle */}
+                    <div className={styles.mapControls}>
+                        <span className={styles.toggleLabel}>Color by:</span>
+                        <div role="group" aria-label="Color precincts by">
+                            <button
+                                type="button"
+                                className={`${styles.toggleBtn} ${colorMode === 'locality' ? styles.toggleActive : ''}`}
+                                onClick={() => setColorMode('locality')}
+                            >
+                                Locality
+                            </button>
+                            <button
+                                type="button"
+                                className={`${styles.toggleBtn} ${colorMode === 'hd' ? styles.toggleActive : ''}`}
+                                onClick={() => setColorMode('hd')}
+                            >
+                                House of Delegates
+                            </button>
+                        </div>
+                    </div>
+
                     <div className={styles.mapLayout}>
 
                         {/* Map */}
@@ -408,7 +445,7 @@ function Elections() {
                                     {geoData && (
                                         <GeoJSON
                                             data={geoData}
-                                            style={baseStyle}
+                                            style={styleFor}
                                             onEachFeature={onEachFeature}
                                         />
                                     )}
@@ -439,15 +476,25 @@ function Elections() {
                                         to see what's on the ballot there.
                                     </p>
                                     <ul className={styles.legend}>
-                                        {Object.entries(LOCALITIES).map(([fips, loc]) => (
-                                            <li key={fips}>
-                                                <span
-                                                    className={styles.legendSwatch}
-                                                    style={{ backgroundColor: loc.color }}
-                                                />
-                                                {loc.name}
-                                            </li>
-                                        ))}
+                                        {colorMode === 'hd'
+                                            ? Object.entries(HD_COLORS).map(([hd, color]) => (
+                                                <li key={hd}>
+                                                    <span
+                                                        className={styles.legendSwatch}
+                                                        style={{ backgroundColor: color }}
+                                                    />
+                                                    House District {hd}
+                                                </li>
+                                            ))
+                                            : Object.entries(LOCALITIES).map(([fips, loc]) => (
+                                                <li key={fips}>
+                                                    <span
+                                                        className={styles.legendSwatch}
+                                                        style={{ backgroundColor: loc.color }}
+                                                    />
+                                                    {loc.name}
+                                                </li>
+                                            ))}
                                     </ul>
                                 </>
                             ) : (
