@@ -46,11 +46,11 @@ export const LOCALITIES = {
 // registrar's precinct list, then fill in the names below.
 // Example once confirmed:  '069': { 1: 'Back Creek', 2: 'Gainesboro', ... }
 export const DISTRICT_NAMES = {
-    '069': {},  // Frederick — 6 magisterial districts
-    '840': {},  // Winchester — 4 wards
-    '043': {},  // Clarke
-    '187': {},  // Warren
-    '171': {},  // Shenandoah — 6 districts
+    '069': {1: 'Back Creek', 2: 'Gainesboro', 3: 'Stonewall', 4: 'Shawnee', 5: 'Opequon', 6: 'Red Bud'},  // Frederick — 6 magisterial districts
+    '840': {1: 'Ward 1', 2: 'Ward 2', 3: 'Ward 3', 4: 'Ward 4'},  // Winchester — 4 wards
+    '043': {1: 'Russell', 2: 'Berryville', 3: 'Millwood', 4: 'White Post', 5: 'Buckmarsh'},  // Clarke
+    '187': {1: 'Fork', 2: 'Happy Creek', 3: 'North River', 4: 'Shenandoah', 5: 'South River'},  // Warren
+    '171': {1: 'District 1', 2: 'District 2', 3: 'District 3', 4: 'District 4', 5: 'District 5', 6: 'District 6'},  // Shenandoah — 6 districts
 };
 
 // ── Election ────────────────────────────────────────────────
@@ -69,7 +69,9 @@ export const ELECTION = {
 //   { type: 'sd', district: '001' }            — a VA Senate district
 //   { type: 'hd', district: '032' }            — a House of Delegates district
 //   { type: 'locality', fips }                 — one county/city
-//   { type: 'district', fips, district }       — one local district/ward
+//   { type: 'district', fips, district }       — one local district/ward;
+//       district can be the number (5) or the name ('Opequon') as listed
+//       in DISTRICT_NAMES
 //   { type: 'town', name: 'Front Royal' }      — an incorporated town
 //
 // District codes match precinctDistricts.json (zero-padded GEOID suffixes),
@@ -84,15 +86,56 @@ export const RACES = [
         office: 'U.S. Senate',
         area: 'Virginia (statewide)',
         scope: { type: 'statewide' },
-        candidates: [{name: 'Mark Warner', party: 'Democrat', website: 'https://markwarnerva.com'}],
+        candidates: [{name: 'Mark Warner', party: 'D', website: 'https://markwarnerva.com'}],
     },
     {
         id: 'us-house-va06-2026',
         office: 'U.S. House of Representatives',
         area: '6th Congressional District',
         scope: { type: 'cd', district: '06' },
-        candidates: [{name: 'Beth Macy', party: 'Democrat', website: 'https://bethmacyforcongress.com'}, {name: 'Ben Cline', party: 'Republican', website: 'https://bencline.com'}],
+        candidates: [{name: 'Beth Macy', party: 'D', website: 'https://bethmacyforcongress.com'}, {name: 'Ben Cline', party: 'R', website: 'https://bencline.com'}],
     },
+    {
+        id: 'frederick-boschair-2026',
+        office: 'Board of Supervisors - Chair',
+        area: 'Frederick County',
+        scope: { type: 'locality', fips: '069' },
+        candidates: [{name: 'John Francis Jewell', party: 'R', website: 'https://www.fcva.us/departments/board-of-supervisors/board-members-and-contact-info/chairman-at-large'}, {name: 'Alexander Michael Ritter', party: 'Ind', website: ''}]
+    },
+    {
+        id: 'frederick-bosbackcreek-2026',
+        office: 'Board of Supervisors',
+        area: 'Frederick County - Back Creek',
+        scope: { type: 'district', fips: '069', district: 'Back Creek'},
+        candidates: [{name: 'Albert Orndorff', party: 'R', website: ''}, {name: 'Elizabeth Aylor', party: 'Ind', website: ''}]
+    },
+    {
+        id: 'frederick-bosgainesboro-2026',
+        office: 'Board of Supervisors',
+        area: 'Frederick County - Gainesboro',
+        scope: { type: 'district', fips: '069', district: 'Gainesboro'},
+        candidates: [{name: 'Jason Aikens', party: 'R', website: ''}, {name: 'Vaugn Stanley Whitacre', party: 'Ind', website: ''}, {name: 'Rebecca Rager', party: 'Ind', website: ''}]
+    },
+    {
+        id: 'warren-mayor-2026',
+        office: 'Mayor',
+        area: 'Town of Front Royal',
+        scope: { type: 'town', name: 'Front Royal'},
+        candidates: [{name: 'Lori Athey Cockrell', party: 'Ind', website: ''}]
+    },
+    {
+        id: 'warren-towncouncil-2026',
+        office: 'Town Council',
+        area: 'Town of Front Royal',
+        scope: { type: 'town', name: 'Front Royal'},
+        candidates: [
+            {name: 'Donald R. E. Stallings', party: 'Ind', website: ''},
+            {name: 'L. Allen R. Neel', party: 'Ind', website: ''},
+            {name: 'H. Bruce Rpapaport', party: 'Ind', website: ''},
+            {name: 'Joshua L Ingram', party: 'Ind', website: ''},
+            {name: 'Amber Faith Veitenthal', party: 'Ind', website: ''}
+        ]
+    }
     // Add state (SD/HD), county, school board, and town races here as
     // they are confirmed for the cycle. Examples:
     // {
@@ -119,6 +162,19 @@ function districtNum(code) {
     return Number.isNaN(n) ? null : n;
 }
 
+// Resolve a local district spec to its number. Accepts the number itself
+// (5 or '5') or the district's name ('Opequon', case-insensitive) via the
+// DISTRICT_NAMES table.
+function localDistrictNumber(fips, district) {
+    const n = parseInt(district, 10);
+    if (!Number.isNaN(n)) return n;
+
+    const wanted = String(district).toLowerCase();
+    const match = Object.entries(DISTRICT_NAMES[fips] ?? {})
+        .find(([, name]) => name.toLowerCase() === wanted);
+    return match ? Number(match[0]) : null;
+}
+
 // Extract structured info from a precinct feature's GeoJSON properties,
 // joined with the generated district assignments.
 export function precinctInfo(props) {
@@ -128,7 +184,11 @@ export function precinctInfo(props) {
     const districtNumber = Number.isNaN(number) ? null : Math.floor(number / 100);
 
     const isCity = fips === '840';
-    const confirmedName = DISTRICT_NAMES[fips]?.[districtNumber];
+    const prefix = isCity ? 'Ward' : 'District';
+    // Skip names that just restate the number ("Ward 1", "District 3") so
+    // the label doesn't come out as "Ward 1 — Ward 1"
+    const rawName = DISTRICT_NAMES[fips]?.[districtNumber];
+    const confirmedName = rawName === `${prefix} ${districtNumber}` ? null : rawName;
 
     // Congressional / state legislative districts and incorporated place
     const d = precinctDistricts.precincts[props.UNIQUE_ID] ?? {};
@@ -142,7 +202,7 @@ export function precinctInfo(props) {
         // "Ward 4" for Winchester, "District 5" for the counties,
         // with the real name appended once confirmed with registrars
         districtLabel: districtNumber
-            ? `${isCity ? 'Ward' : 'District'} ${districtNumber}${confirmedName ? ` — ${confirmedName}` : ''}`
+            ? `${prefix} ${districtNumber}${confirmedName ? ` — ${confirmedName}` : ''}`
             : null,
         cd: districtNum(d.cd),
         sd: districtNum(d.sd),
@@ -169,7 +229,8 @@ export function racesForPrecinct(info, addressTown) {
             case 'sd':        return districtNum(s.district) === info.sd;
             case 'hd':        return districtNum(s.district) === info.hd;
             case 'locality':  return s.fips === info.fips;
-            case 'district':  return s.fips === info.fips && s.district === info.districtNumber;
+            case 'district':  return s.fips === info.fips
+                && localDistrictNumber(s.fips, s.district) === info.districtNumber;
             case 'town':
                 return addressTown === undefined
                     ? info.towns[s.name] !== undefined
