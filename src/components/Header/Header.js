@@ -16,8 +16,9 @@ function Header() {
 
                 {/* Left nav links */}
                 <nav className={styles.navLeft}>
-                    <NavLink to="/about"   className={navClass}>About Us</NavLink>
-                    <NavLink to="/events"  className={navClass}>Events</NavLink>
+                    <NavLink to="/about"     className={navClass}>About Us</NavLink>
+                    <NavLink to="/events"    className={navClass}>Events</NavLink>
+                    <NavLink to="/elections" className={navClass}>Elections</NavLink>
                 </nav>
 
                 {/* Center logo bug — links home */}

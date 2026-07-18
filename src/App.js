@@ -17,6 +17,7 @@ import Footer from './components/Footer/Footer';
 import Home        from './pages/Home/Home';
 import About       from './pages/About/About';
 import Events      from './pages/Events/Events';
+import Elections   from './pages/Elections/Elections';
 import GetInvolved from './pages/GetInvolved/GetInvolved';
 
 // Member area
@@ -72,6 +73,7 @@ function App() {
                     <Route path="/"             element={<PublicLayout><Home /></PublicLayout>} />
                     <Route path="/about"        element={<PublicLayout><About /></PublicLayout>} />
                     <Route path="/events"       element={<PublicLayout><Events /></PublicLayout>} />
+                    <Route path="/elections"    element={<PublicLayout><Elections /></PublicLayout>} />
                     <Route path="/get-involved" element={<PublicLayout><GetInvolved /></PublicLayout>} />
 
                     {/* ── Member area — manages its own layout ── */}
