@@ -1,0 +1,411 @@
+{
+  "_meta": {
+    "generated": "2026-07-18",
+    "source": "US Census geographies API (Public_AR_Current / Current_Current) at mapshaper interior points",
+    "fields": "cd = US House district, sd = VA Senate, hd = House of Delegates, place = incorporated city/town at interior point"
+  },
+  "precincts": {
+    "Clarke County-:-101 - Russell": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Clarke County-:-201 - Berryville": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": "Berryville town"
+    },
+    "Clarke County-:-301 - Millwood": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Clarke County-:-302 - Pine Grove": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Clarke County-:-401 - White Post": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Clarke County-:-501 - Buckmarsh": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Clarke County-:-502 - Blue Ridge": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-101 - Russells": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-102 - Gore": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-103 - Kernstown": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-104 - Cedar Creek": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-105 - Middletown": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": "Middletown town"
+    },
+    "Frederick County-:-201 - Gainesborough": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-202 - Albin": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-203 - Redland": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-204 - Nain": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-205 - White Hall": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-301 - Clear Brook": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-302 - Neffs Town": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-303 - Jordan Springs": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-304 - Gibson School": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-305 - Sunnyside": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-401 - Armel": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-402 - Shenandoah": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-403 - Parkins Mill": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-404 - White Oak School": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-501 - Stephens City": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": "Stephens City town"
+    },
+    "Frederick County-:-502 - Bass-Hoover": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-503 - Canterburg": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-504 - Vaucluse Spring": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-505 - Aylor": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Frederick County-:-601 - Millbrook": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-602 - Ash Hollow": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-603 - Greenwood": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-604 - Carpers Valley": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": null
+    },
+    "Frederick County-:-605 - Sulphur Spring": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Shenandoah County-:-101 - Orkney Springs": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-103 - New Market": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": "New Market town"
+    },
+    "Shenandoah County-:-201 - Conicville": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-202 - Mount Jackson": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-302 - Edinburg": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-303 - Saint Luke": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-304 - Fort Valley": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-401 - Woodstock North": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-402 - Woodstock South": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-501 - Cedar Creek": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-503 - Toms Brook": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-504 - Lebanon Church": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Shenandoah County-:-601 - Strasburg West": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": "Strasburg town"
+    },
+    "Shenandoah County-:-602 - Strasburg East": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": "Strasburg town"
+    },
+    "Warren County-:-101 - Fork Town": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": "Front Royal town"
+    },
+    "Warren County-:-102 - Otterburn": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Warren County-:-201 - Happy Creek": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Warren County-:-202 - Linden": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Warren County-:-301 - North River": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": "Front Royal town"
+    },
+    "Warren County-:-302 - Riverton": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Warren County-:-401 - East Shenandoah": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Warren County-:-402 - Town - West Shenandoah": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Warren County-:-501 - South River": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "031",
+      "place": null
+    },
+    "Warren County-:-502 - Bentonville": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Warren County-:-504 - Browntown": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "033",
+      "place": null
+    },
+    "Winchester City-:-101 - Merrimans": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": "Winchester city"
+    },
+    "Winchester City-:-102 - Old Town": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": "Winchester city"
+    },
+    "Winchester City-:-201 - Virginia Avenue": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": "Winchester city"
+    },
+    "Winchester City-:-301 - War Memorial": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": "Winchester city"
+    },
+    "Winchester City-:-401 - Frederick Douglass": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": "Winchester city"
+    },
+    "Winchester City-:-402 - Rolling Hills": {
+      "cd": "06",
+      "sd": "001",
+      "hd": "032",
+      "place": "Winchester city"
+    }
+  }
+}

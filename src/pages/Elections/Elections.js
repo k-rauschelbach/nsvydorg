@@ -58,7 +58,7 @@ function pointInPolygonCoords(lng, lat, polygonCoords) {
     return true;
 }
 
-function findPrecinctAt(lng, lat, geoData) {
+function findFeatureAt(lng, lat, geoData) {
     for (const feature of geoData.features) {
         const { type, coordinates } = feature.geometry;
         if (type === 'Polygon') {
@@ -132,6 +132,7 @@ const TOOLTIP_DELAY_MS = 200;
 
 function Elections() {
     const [geoData, setGeoData] = useState(null);
+    const [townsData, setTownsData] = useState(null); // town boundary polygons
     const [geoError, setGeoError] = useState(false);
     const [selected, setSelected] = useState(null);       // precinctInfo() of the clicked precinct
     const [addressPoint, setAddressPoint] = useState(null); // { lat, lng, label } from a search
@@ -155,7 +156,9 @@ function Elections() {
         layersRef.current.forEach((layer) => layer.closeTooltip());
     }, []);
 
-    // Fetch the precinct polygons once on mount
+    // Fetch the precinct polygons once on mount. Town boundaries load
+    // alongside; they refine address searches (exact in-town / out-of-town),
+    // so a failed load just degrades to precinct-level town info.
     useEffect(() => {
         fetch(`${process.env.PUBLIC_URL}/data/precincts.geojson`)
             .then((res) => {
@@ -164,6 +167,11 @@ function Elections() {
             })
             .then(setGeoData)
             .catch(() => setGeoError(true));
+
+        fetch(`${process.env.PUBLIC_URL}/data/towns.geojson`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then(setTownsData)
+            .catch(() => {});
     }, []);
 
     // Fit the map to the full coverage area once both map and data exist,
@@ -304,7 +312,7 @@ function Elections() {
                 return;
             }
 
-            const feature = findPrecinctAt(hit.lng, hit.lat, geoData);
+            const feature = findFeatureAt(hit.lng, hit.lat, geoData);
             if (!feature) {
                 setSearchError(
                     'That address is outside our coverage area (Warren, Shenandoah, Clarke, and Frederick Counties, and Winchester City).'
@@ -312,7 +320,14 @@ function Elections() {
                 return;
             }
 
-            setAddressPoint(hit);
+            // Exact town-limits test for the address — name of the containing
+            // town, null if outside every town, undefined if boundaries
+            // didn't load (falls back to precinct-level town info)
+            const town = townsData
+                ? findFeatureAt(hit.lng, hit.lat, townsData)?.properties.NAME ?? null
+                : undefined;
+
+            setAddressPoint({ ...hit, town });
             const layer = layersRef.current.get(feature.properties.UNIQUE_ID);
             if (layer) selectFeature(feature, layer);
         } catch {
@@ -322,7 +337,12 @@ function Elections() {
         }
     }
 
-    const races = selected ? racesForPrecinct(selected) : [];
+    // With a searched address, town races are filtered exactly by the
+    // address's town; on a plain precinct click they're included for any
+    // overlapping town (qualified in the UI when the overlap is partial)
+    const races = selected
+        ? racesForPrecinct(selected, addressPoint ? addressPoint.town : undefined)
+        : [];
 
     return (
         <div>
@@ -346,7 +366,7 @@ function Elections() {
                         <input
                             type="text"
                             className={styles.searchInput}
-                            placeholder="Enter your address — e.g. 21 S Kent St, Winchester, VA"
+                            placeholder="Enter your address: e.g. 21 S Kent St, Winchester, VA"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             aria-label="Street address"
@@ -450,8 +470,53 @@ function Elections() {
                                         </p>
                                     )}
 
+                                    {/* District assignments from precinctDistricts.json */}
+                                    <ul className={styles.districtList}>
+                                        {selected.cd && (
+                                            <li>
+                                                <span>U.S. House</span>
+                                                <span>District {selected.cd}</span>
+                                            </li>
+                                        )}
+                                        {selected.sd && (
+                                            <li>
+                                                <span>Va. Senate</span>
+                                                <span>District {selected.sd}</span>
+                                            </li>
+                                        )}
+                                        {selected.hd && (
+                                            <li>
+                                                <span>House of Delegates</span>
+                                                <span>District {selected.hd}</span>
+                                            </li>
+                                        )}
+                                        {/* Searched address: exact in/out of town limits.
+                                            Plain click: towns overlapping the precinct. */}
+                                        {addressPoint && addressPoint.town !== undefined ? (
+                                            (addressPoint.town || Object.keys(selected.towns).length > 0) && (
+                                                <li>
+                                                    <span>Town limits</span>
+                                                    <span>{addressPoint.town ?? 'Outside any town'}</span>
+                                                </li>
+                                            )
+                                        ) : (
+                                            Object.keys(selected.towns).length > 0 && (
+                                                <li>
+                                                    <span>Town</span>
+                                                    <span>
+                                                        {Object.entries(selected.towns)
+                                                            .map(([name, coverage]) =>
+                                                                coverage === 'partial' ? `${name} (partial)` : name
+                                                            )
+                                                            .join(', ')}
+                                                    </span>
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+
                                     <h3 className={styles.racesHeading}>
-                                        On the ballot &mdash; {ELECTION.displayDate}
+                                        On the ballot: {ELECTION.displayDate}
                                     </h3>
 
                                     <ul className={styles.raceList}>
@@ -459,6 +524,15 @@ function Elections() {
                                             <li key={race.id} className={styles.race}>
                                                 <span className={styles.raceOffice}>{race.office}</span>
                                                 <span className={styles.raceArea}>{race.area}</span>
+                                                {/* Precinct partially overlaps this town and no exact
+                                                    address is known — not everyone here gets this race */}
+                                                {race.scope.type === 'town' &&
+                                                    (!addressPoint || addressPoint.town === undefined) &&
+                                                    selected.towns[race.scope.name] === 'partial' && (
+                                                        <span className={styles.raceQualifier}>
+                                                            Only for addresses inside {race.scope.name} town limits
+                                                        </span>
+                                                    )}
                                                 {race.candidates.length > 0 ? (
                                                     <ul className={styles.candidateList}>
                                                         {race.candidates.map((c) => (
@@ -482,14 +556,6 @@ function Elections() {
                                             </li>
                                         ))}
                                     </ul>
-
-                                    <p className={styles.panelNote}>
-                                        State and local races for this precinct are still being
-                                        compiled. Verify your registration and polling place at the{' '}
-                                        <a href={ELECTION.registrationUrl} target="_blank" rel="noreferrer">
-                                            Virginia citizen portal
-                                        </a>.
-                                    </p>
                                 </>
                             )}
                         </aside>

@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "generated": "2026-07-18",
+    "source": "Census TIGER 2024 places (LSAD 43) overlaid on RDH precinct boundaries via mapshaper clip",
+    "fields": "precincts[UNIQUE_ID][townName] = 'full' | 'partial' precinct coverage by that town"
+  },
+  "precincts": {
+    "Frederick County-:-104 - Cedar Creek": {
+      "Middletown": "partial"
+    },
+    "Frederick County-:-105 - Middletown": {
+      "Middletown": "full"
+    },
+    "Frederick County-:-501 - Stephens City": {
+      "Stephens City": "full"
+    },
+    "Frederick County-:-502 - Bass-Hoover": {
+      "Stephens City": "partial"
+    },
+    "Shenandoah County-:-503 - Toms Brook": {
+      "Toms Brook": "partial"
+    },
+    "Warren County-:-101 - Fork Town": {
+      "Front Royal": "full"
+    },
+    "Warren County-:-201 - Happy Creek": {
+      "Front Royal": "partial"
+    },
+    "Warren County-:-301 - North River": {
+      "Front Royal": "full"
+    },
+    "Warren County-:-402 - Town - West Shenandoah": {
+      "Front Royal": "partial"
+    },
+    "Warren County-:-501 - South River": {
+      "Front Royal": "partial"
+    },
+    "Shenandoah County-:-302 - Edinburg": {
+      "Edinburg": "partial"
+    },
+    "Shenandoah County-:-202 - Mount Jackson": {
+      "Mount Jackson": "partial"
+    },
+    "Shenandoah County-:-103 - New Market": {
+      "New Market": "partial"
+    },
+    "Shenandoah County-:-601 - Strasburg West": {
+      "Strasburg": "partial"
+    },
+    "Shenandoah County-:-602 - Strasburg East": {
+      "Strasburg": "partial"
+    },
+    "Shenandoah County-:-401 - Woodstock North": {
+      "Woodstock": "partial"
+    },
+    "Shenandoah County-:-402 - Woodstock South": {
+      "Woodstock": "partial"
+    },
+    "Clarke County-:-101 - Russell": {
+      "Berryville": "partial"
+    },
+    "Clarke County-:-201 - Berryville": {
+      "Berryville": "full"
+    },
+    "Clarke County-:-301 - Millwood": {
+      "Berryville": "partial"
+    },
+    "Clarke County-:-501 - Buckmarsh": {
+      "Berryville": "partial"
+    },
+    "Clarke County-:-401 - White Post": {
+      "Boyce": "partial"
+    }
+  }
+}

@@ -52,6 +52,51 @@ npx mapshaper -i va_2024_gen_all_prec/va_2024_gen_all_prec.shp \
 Then copy `nsv_precincts_full.geojson` to `public/data/precincts.geojson`
 unmodified (see the no-simplification warning above).
 
+## District assignments
+
+`src/data/precinctDistricts.json` maps every precinct to its congressional
+district, VA Senate district, House of Delegates district, and incorporated
+place, via the US Census geographies API queried at a mapshaper-computed
+interior point of each precinct. Regenerate after redistricting or any
+precinct boundary change:
+
+```
+npx mapshaper nsv_precincts_full.geojson \
+  -each "ix=this.innerX; iy=this.innerY" \
+  -filter-fields "UNIQUE_ID,ix,iy" -o inner_points.json format=json
+node build-districts.mjs
+```
+
+The script prints district combinations per locality — eyeball them for
+contiguity (a locality should have only a few combinations). Note the
+interior-point caveat in build-districts.mjs regarding split precincts.
+
+## Town boundaries and overlap
+
+Town limits don't follow precinct lines — a precinct can contain both
+in-town and out-of-town voters, who get different ballots. Two artifacts
+handle this:
+
+- `public/data/towns.geojson` — the 11 incorporated towns in the coverage
+  area (Census TIGER places, LSAD 43, clipped to the precinct outline).
+  Used for an exact point-in-polygon town test on searched addresses.
+- `src/data/precinctTowns.json` — per-precinct town overlap
+  (`full`/`partial`), from overlaying the two layers. Drives the
+  precinct-click display and its "town addresses only" qualifiers.
+
+Regenerate (from scripts/geodata/, with the TIGER place shapefile for
+Virginia extracted somewhere):
+
+```
+npx mapshaper nsv_precincts_full.geojson -dissolve -o coverage_outline.geojson format=geojson
+npx mapshaper path/to/tl_2024_51_place.shp -filter "LSAD=='43'" \
+  -clip coverage_outline.geojson remove-slivers \
+  -filter-fields "NAME,NAMELSAD" -o nsv_towns.geojson format=geojson precision=0.000001
+node build-towns.mjs
+```
+
+Then copy `nsv_towns.geojson` to `public/data/towns.geojson`.
+
 ## Maintenance
 
 Precinct boundaries change occasionally (consolidations, town annexations,

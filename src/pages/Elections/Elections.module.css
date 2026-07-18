@@ -114,6 +114,12 @@
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     border: 1px solid var(--color-gray-300);
+    /* Contain Leaflet's internal z-indexes (panes 400+, controls up to
+       1000) in their own stacking context so the map can't paint over
+       the fixed site header (z-index 100) when scrolled beneath it */
+    isolation: isolate;
+    position: relative;
+    z-index: 0;
 }
 
 /* MapContainer needs an explicit height to render */
@@ -219,6 +225,32 @@
 }
 
 
+/* District assignment rows: label left, district right */
+.districtList {
+    list-style: none;
+    padding: var(--space-sm) 0 0;
+    margin: var(--space-sm) 0 0;
+    border-top: 1px solid var(--color-gray-300);
+}
+
+.districtList li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: 2px 0;
+    font-size: var(--font-size-sm);
+}
+
+.districtList li span:first-child {
+    color: var(--color-gray-600);
+}
+
+.districtList li span:last-child {
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+
 /* ============================================================
    Ballot / races list
    ============================================================ */
@@ -226,7 +258,9 @@
 .racesHeading {
     font-size: var(--font-size-base);
     color: var(--color-gray-900);
-    margin: var(--space-lg) 0 var(--space-sm);
+    /* Top margin matches the district list's padding above its first row,
+       so the gap below the last district row isn't visibly larger */
+    margin: var(--space-sm) 0 var(--space-sm);
     padding-top: var(--space-md);
     border-top: 1px solid var(--color-gray-300);
 }
@@ -260,6 +294,13 @@
     font-style: italic;
 }
 
+/* Note on town races when the precinct only partially overlaps the town */
+.raceQualifier {
+    font-size: var(--font-size-sm);
+    color: var(--color-accent);
+    font-style: italic;
+}
+
 .candidateList {
     list-style: none;
     padding: 0;
@@ -267,7 +308,7 @@
 }
 
 .candidateList li {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-lg);
     padding: 2px 0;
 }
 
