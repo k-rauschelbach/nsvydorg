@@ -10,3 +10,39 @@
 .App main {
   flex: 1;
 }
+
+/* Page-transition: the section backgrounds (blue banner, white body,
+   gray band) are identical on every page and must stay perfectly still.
+   Only the content inside each section fades in — over its own section's
+   static background, so nothing flashes through. Replays on navigation
+   because PublicLayout keys <main> by pathname, forcing a remount. */
+.App main section > * {
+  /* "backwards" keeps delayed content invisible until its turn starts */
+  animation: pageEnter 120ms ease-out backwards;
+  animation-delay: var(--section-delay, 0ms);
+}
+
+/* Cascade: each top-level block of the page starts fading just as the
+   one above it finishes. --section-delay inherits down to the section
+   content, including sections nested inside wrapper divs. */
+.App main > div > :nth-child(2) { --section-delay: 100ms; }
+.App main > div > :nth-child(3) { --section-delay: 200ms; }
+.App main > div > :nth-child(4) { --section-delay: 300ms; }
+.App main > div > :nth-child(5) { --section-delay: 400ms; }
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .App main section > * {
+    animation: none;
+  }
+}

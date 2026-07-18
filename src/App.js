@@ -1,6 +1,7 @@
 // App.js -- routing hub
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 
 // Auth
@@ -21,14 +22,30 @@ import GetInvolved from './pages/GetInvolved/GetInvolved';
 // Member area
 import Dashboard from './pages/Member/Dashboard';
 
+// ScrollToTop resets scroll position on every route change so navigating
+// from mid-page doesn't land the next page mid-scroll. Renders nothing.
+function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+}
+
 // PublicLayout wraps all public-facing pages with the shared Header + Footer.
 // Defined here since it's only needed by App. The member Dashboard manages
 // its own layout and does not use this wrapper.
 function PublicLayout({ children }) {
+    const { pathname } = useLocation();
+
     return (
         <div className="App">
             <Header />
-            <main>
+            {/* Keyed by pathname so <main> remounts on navigation,
+                replaying the pageEnter fade-in from App.css */}
+            <main key={pathname}>
                 {children}
             </main>
             <Footer />
@@ -42,6 +59,8 @@ function App() {
         // Dashboard both call useNavigate(), which requires router context.
         <BrowserRouter>
             <AuthProvider>
+
+                <ScrollToTop />
 
                 {/* LoginModal is mounted at the top level so it renders over
                     any page. It self-hides when loginModalOpen is false. */}
