@@ -162,13 +162,18 @@ function Elections() {
         return { fillColor: fill, fillOpacity: 0.45, color: '#ffffff', weight: 1.5 };
     }, []);
 
-    // Restyle every non-selected precinct when the color mode changes
+    // Restyle every precinct when the color mode changes. The selected
+    // precinct gets the new mode's fill with the selection highlight
+    // (border/opacity) merged back on top.
     useEffect(() => {
         colorModeRef.current = colorMode;
         layersRef.current.forEach((layer) => {
-            if (selectedLayerRef.current?.layer !== layer) {
-                layer.setStyle(styleFor(layer.feature));
-            }
+            const base = styleFor(layer.feature);
+            layer.setStyle(
+                selectedLayerRef.current?.layer === layer
+                    ? { ...base, ...SELECTED_STYLE }
+                    : base
+            );
         });
     }, [colorMode, styleFor]);
 
