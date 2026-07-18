@@ -118,6 +118,14 @@ async function geocode(address) {
 const HOVER_STYLE = { fillOpacity: 0.7, weight: 2.5 };
 const SELECTED_STYLE = { fillOpacity: 0.75, weight: 3, color: '#1f2937' };
 
+// Candidate party badge: D and R get their conventional colors,
+// anything else (Ind, third parties) a neutral badge
+function partyClass(party) {
+    if (party === 'D') return styles.partyD;
+    if (party === 'R') return styles.partyR;
+    return styles.partyOther;
+}
+
 // Delay before a hover tooltip appears — avoids a flurry of tooltips
 // when sweeping the cursor across the map
 const TOOLTIP_DELAY_MS = 200;
@@ -365,6 +373,53 @@ function Elections() {
         ? racesForPrecinct(selected, addressPoint ? addressPoint.town : undefined)
         : [];
 
+    // The ballot renders as two labeled groups: federal/state offices
+    // (statewide, congressional, General Assembly) and local ones
+    // (county, district, town)
+    const LOCAL_SCOPES = ['locality', 'district', 'town'];
+    const stateRaces = races.filter((r) => !LOCAL_SCOPES.includes(r.scope.type));
+    const localRaces = races.filter((r) => LOCAL_SCOPES.includes(r.scope.type));
+
+    const renderRace = (race) => (
+        <li key={race.id} className={styles.race}>
+            <span className={styles.raceOffice}>{race.office}</span>
+            <span className={styles.raceArea}>{race.area}</span>
+            {/* Precinct partially overlaps this town and no exact
+                address is known — not everyone here gets this race */}
+            {race.scope.type === 'town' &&
+                (!addressPoint || addressPoint.town === undefined) &&
+                selected.towns[race.scope.name] === 'partial' && (
+                    <span className={styles.raceQualifier}>
+                        Only for addresses inside {race.scope.name} town limits
+                    </span>
+                )}
+            {race.candidates.length > 0 ? (
+                <ul className={styles.candidateList}>
+                    {race.candidates.map((c) => (
+                        <li key={c.name}>
+                            {c.party && (
+                                <span className={partyClass(c.party)}>
+                                    {c.party}
+                                </span>
+                            )}
+                            {c.website ? (
+                                <a href={c.website} target="_blank" rel="noreferrer">
+                                    {c.name}
+                                </a>
+                            ) : (
+                                c.name
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <span className={styles.raceTbd}>
+                    Candidates will be listed once the lineup is final.
+                </span>
+            )}
+        </li>
+    );
+
     return (
         <div>
 
@@ -397,14 +452,14 @@ function Elections() {
                             className={styles.searchButton}
                             disabled={searching || !geoData}
                         >
-                            {searching ? 'Searching…' : 'Find my precinct'}
+                            {searching ? 'Searching…' : 'Find my Precinct'}
                         </button>
                     </form>
                     {searchError && <p className={styles.searchError}>{searchError}</p>}
 
                     {/* Map color mode toggle */}
                     <div className={styles.mapControls}>
-                        <span className={styles.toggleLabel}>Color by:</span>
+                        <span className={styles.toggleLabel}>Color Overlay:</span>
                         <div role="group" aria-label="Color precincts by">
                             <button
                                 type="button"
@@ -501,6 +556,17 @@ function Elections() {
                                                 </li>
                                             ))}
                                     </ul>
+                                    <p className={styles.panelNote}>
+                                        Not sure if you're registered?{' '}
+                                        <a
+                                            href={ELECTION.registrationUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            Check your voter registration
+                                        </a>{' '}
+                                        with the Virginia Department of Elections.
+                                    </p>
                                 </>
                             ) : (
                                 <>
@@ -511,11 +577,22 @@ function Elections() {
                                         &larr; All precincts
                                     </button>
 
-                                    <h2 className={styles.panelTitle}>{selected.precinct}</h2>
-                                    <p className={styles.panelMeta}>
-                                        {selected.locality}
-                                        {selected.districtLabel && ` · ${selected.districtLabel}`}
-                                    </p>
+                                    {/* Left accent bar in the locality's map color ties the
+                                        panel to the clicked polygon */}
+                                    <div
+                                        className={styles.panelHeader}
+                                        style={{ borderLeftColor: LOCALITIES[selected.fips]?.color }}
+                                    >
+                                        <h2 className={styles.panelTitle}>{selected.precinct}</h2>
+                                        <p className={styles.panelMeta}>
+                                            <span
+                                                className={styles.localityDot}
+                                                style={{ backgroundColor: LOCALITIES[selected.fips]?.color }}
+                                            />
+                                            {selected.locality}
+                                            {selected.districtLabel && ` · ${selected.districtLabel}`}
+                                        </p>
+                                    </div>
                                     {addressPoint && (
                                         <p className={styles.panelAddress}>
                                             &#128205; {addressPoint.label}
@@ -523,6 +600,7 @@ function Elections() {
                                     )}
 
                                     {/* District assignments from precinctDistricts.json */}
+                                    <h3 className={styles.sectionLabel}>Districts</h3>
                                     <ul className={styles.districtList}>
                                         {selected.cd && (
                                             <li>
@@ -532,7 +610,7 @@ function Elections() {
                                         )}
                                         {selected.sd && (
                                             <li>
-                                                <span>Va. Senate</span>
+                                                <span>State Senate</span>
                                                 <span>District {selected.sd}</span>
                                             </li>
                                         )}
@@ -567,47 +645,37 @@ function Elections() {
                                         )}
                                     </ul>
 
-                                    <h3 className={styles.racesHeading}>
-                                        On the ballot: {ELECTION.displayDate}
-                                    </h3>
+                                    <h3 className={styles.sectionLabel}>On the ballot</h3>
+                                    <p className={styles.racesDate}>{ELECTION.displayDate}</p>
 
-                                    <ul className={styles.raceList}>
-                                        {races.map((race) => (
-                                            <li key={race.id} className={styles.race}>
-                                                <span className={styles.raceOffice}>{race.office}</span>
-                                                <span className={styles.raceArea}>{race.area}</span>
-                                                {/* Precinct partially overlaps this town and no exact
-                                                    address is known — not everyone here gets this race */}
-                                                {race.scope.type === 'town' &&
-                                                    (!addressPoint || addressPoint.town === undefined) &&
-                                                    selected.towns[race.scope.name] === 'partial' && (
-                                                        <span className={styles.raceQualifier}>
-                                                            Only for addresses inside {race.scope.name} town limits
-                                                        </span>
-                                                    )}
-                                                {race.candidates.length > 0 ? (
-                                                    <ul className={styles.candidateList}>
-                                                        {race.candidates.map((c) => (
-                                                            <li key={c.name}>
-                                                                {c.website ? (
-                                                                    <a href={c.website} target="_blank" rel="noreferrer">
-                                                                        {c.name}
-                                                                    </a>
-                                                                ) : (
-                                                                    c.name
-                                                                )}
-                                                                {c.party && ` (${c.party})`}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                ) : (
-                                                    <span className={styles.raceTbd}>
-                                                        Candidates will be listed once the lineup is final.
-                                                    </span>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    {stateRaces.length > 0 && (
+                                        <>
+                                            <h4 className={styles.raceGroupLabel}>Federal &amp; State</h4>
+                                            <ul className={styles.raceList}>
+                                                {stateRaces.map(renderRace)}
+                                            </ul>
+                                        </>
+                                    )}
+                                    {localRaces.length > 0 && (
+                                        <>
+                                            <h4 className={styles.raceGroupLabel}>Local</h4>
+                                            <ul className={styles.raceList}>
+                                                {localRaces.map(renderRace)}
+                                            </ul>
+                                        </>
+                                    )}
+
+                                    <p className={styles.panelNote}>
+                                        Make sure you're ready for election day -{' '}
+                                        <a
+                                            href={ELECTION.registrationUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            check your voter registration
+                                        </a>{' '}
+                                        with the Virginia Department of Elections.
+                                    </p>
                                 </>
                             )}
                         </aside>

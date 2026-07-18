@@ -146,22 +146,7 @@ export const RACES = [
             {name: 'Amber Faith Veitenthal', party: 'Ind', website: ''}
         ]
     }
-    // Add state (SD/HD), county, school board, and town races here as
-    // they are confirmed for the cycle. Examples:
-    // {
-    //     id: 'hod-32-2027',
-    //     office: 'House of Delegates',
-    //     area: '32nd District',
-    //     scope: { type: 'hd', district: '032' },
-    //     candidates: [],
-    // },
-    // {
-    //     id: 'frederick-schoolboard-5-2027',
-    //     office: 'School Board',
-    //     area: 'Frederick County, District 5',
-    //     scope: { type: 'district', fips: '069', district: 5 },
-    //     candidates: [],
-    // },
+
 ];
 
 // ── Helpers ─────────────────────────────────────────────────
@@ -212,7 +197,7 @@ export function precinctInfo(props) {
         // "Ward 4" for Winchester, "District 5" for the counties,
         // with the real name appended once confirmed with registrars
         districtLabel: districtNumber
-            ? `${prefix} ${districtNumber}${confirmedName ? ` — ${confirmedName}` : ''}`
+            ? `${prefix} ${districtNumber}${confirmedName ? ` - ${confirmedName}` : ''}`
             : null,
         cd: districtNum(d.cd),
         sd: districtNum(d.sd),
