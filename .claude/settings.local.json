@@ -8,7 +8,10 @@
       "Bash(taskkill /PID 26020 /F)",
       "Bash(cmd //c \"taskkill /PID 26020 /F\")",
       "Bash(npm install)",
-      "Bash(npm audit)"
+      "Bash(npm audit)",
+      "Bash(git -C \"C:/Users/KarlRauschelbach/OneDrive/Documents/nsvyd.org\" status)",
+      "Bash(git -C \"C:/Users/KarlRauschelbach/OneDrive/Documents/nsvyd.org\" log --oneline -15)",
+      "Bash(git -C \"C:/Users/KarlRauschelbach/OneDrive/Documents/nsvyd.org\" diff --stat)"
     ]
   }
 }
