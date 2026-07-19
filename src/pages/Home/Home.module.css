@@ -1,15 +1,17 @@
 .hero {
     background-color: var(--color-primary);
     color: var(--color-white);
+    /* Padding (not margin on the frame) clears the fixed header so the blue
+       background fills the gap instead of the page background showing through */
+    padding-top: 111px;
 }
 
 /* Full-width image container with overlay support */
 .heroImageFrame {
     position: relative;
     width: 100%;
-    /* Top margin clears the fixed header (~108px tall); small bottom margin
-       keeps the intro text close under the image */
-    margin: 111px auto var(--space-md);
+    /* Small bottom margin keeps the intro text close under the image */
+    margin: 0 auto var(--space-md);
     border-top: 5px solid var(--color-white);
     border-bottom: 5px solid var(--color-white);
     box-shadow:
@@ -33,7 +35,8 @@
     right: 0;
     margin: 0;
     padding: 5.5rem var(--space-lg);
-    font-size: var(--font-size-3xl);
+    /* Fluid: scales with viewport so it never swallows the image on mobile */
+    font-size: clamp(1.25rem, 4.8vw, var(--font-size-3xl));
     line-height: 1.2;
     color: var(--color-white);
     opacity: 0.40;
@@ -175,8 +178,15 @@
 
 /* mobile sizing */
 @media (max-width: 700px) {
+    .hero {
+        /* Clears the 68px header plus the logo hanging ~30px below it,
+           with a small buffer so the bug doesn't cover the hero image */
+        padding-top: 110px;
+    }
+
     .heroTitle {
-        font-size: var(--font-size-2xl);
-        padding: var(--space-lg) var(--space-md);
+        /* Small enough to stay in the sky band above the NSVYD watermark */
+        font-size: clamp(0.85rem, 3.2vw, 1.25rem);
+        padding: var(--space-sm) var(--space-md);
     }
 }

@@ -11,7 +11,7 @@ function Home() {
                         alt="Emerald Pond with NSVYD Logo"
                         className={styles.heroImage}
                     />
-                    <h1 className={styles.heroTitle}>(PH!)Forging a Bright Future for the Shenandoah Valley(PH!)</h1>
+                    <h1 className={styles.heroTitle}>Forging a Bright Future for the Shenandoah Valley</h1>
                 </div>
                 <div className={styles.heroInner}>
                     <p>

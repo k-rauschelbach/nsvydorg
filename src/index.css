@@ -64,10 +64,11 @@ code {
   --transition-base: 250ms ease;
 }
 
-/* Mobile: header logo is 100px (hangs ~30px), so less clearance needed */
+/* Mobile: header is ~68px tall with the 90px logo hanging ~30px below it
+   (logo bottom ~98px), plus breathing room */
 @media (max-width: 700px) {
   :root {
-    --header-clearance: 132px;
+    --header-clearance: 116px;
   }
 }
 
