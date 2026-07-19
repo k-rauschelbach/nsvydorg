@@ -178,6 +178,7 @@ function Elections() {
     // search select/zoom a precinct exactly like a click would
     const layersRef = useRef(new Map());
     const selectedLayerRef = useRef(null);
+    const precinctZoomRef = useRef(null);
 
     // Tooltip opening is managed manually (delayed open, suppressed while
     // dragging) instead of Leaflet's instant auto-open — see onEachFeature
@@ -245,6 +246,11 @@ function Elections() {
             map.fitBounds(bounds, { padding: [12, 12] });
             map.setMinZoom(map.getBoundsZoom(bounds.pad(0.1)));
             map.setMaxBounds(bounds.pad(0.35));
+            precinctZoomRef.current = Math.min(
+                ...geoData.features.map((f) =>
+                    map.getBoundsZoom(L.geoJSON(f).getBounds().pad(0.35))
+                )
+            );
         }
     }, [map, geoData]);
 
@@ -286,7 +292,12 @@ function Elections() {
         selectedLayerRef.current = { feature, layer };
         setSelected(precinctInfo(feature.properties));
         if (map) {
-            map.fitBounds(layer.getBounds().pad(0.35));
+            const bounds = layer.getBounds();
+            if (precinctZoomRef.current != null) {
+                map.setView(bounds.getCenter(), precinctZoomRef.current);
+            } else {
+                map.fitBounds(bounds.pad(0.35));
+            }
         }
     }, [map, closeAllTooltips, styleFor]);
 
