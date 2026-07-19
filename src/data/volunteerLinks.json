@@ -1,0 +1,18 @@
+[
+  {
+    "id": "va-dems",
+    "name": "Virginia Democrats",
+    "blurb": "(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.(PH!)",
+    "image": "/vademslogo.svg",
+    "imageAlt": "Virginia Democrats logo",
+    "url": "https://vademocrats.org/volunteer2025/"
+  },
+  {
+    "id": "mobilize",
+    "name": "Mobilize",
+    "blurb": "(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.(PH!)",
+    "image": "/mobilizelogo.png",
+    "imageAlt": "Mobilize logo",
+    "url": "https://www.mobilize.us/"
+  }
+]

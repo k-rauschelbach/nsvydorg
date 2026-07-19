@@ -242,14 +242,14 @@
     border-left: 4px solid var(--color-primary);
 }
 
-.donateCards {
+.linkCards {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
     max-width: 700px;
 }
 
-.donateCard {
+.linkCard {
     background-color: var(--color-white);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-sm);
@@ -260,7 +260,7 @@
     padding: var(--space-lg) var(--space-xl);
 }
 
-.donateCardImg {
+.linkCardImg {
     width: 108px;
     height: 108px;
     border-radius: var(--border-radius-lg);
@@ -269,23 +269,23 @@
     background-color: var(--color-white);
 }
 
-.donateCardBody {
+.linkCardBody {
     flex: 1;
     min-width: 0;
 }
 
-.donateCardBody h3 {
+.linkCardBody h3 {
     font-size: var(--font-size-lg);
     color: var(--color-primary);
     margin: 0 0 var(--space-xs);
 }
 
-.donateCardBody p {
+.linkCardBody p {
     margin: 0;
     color: var(--color-gray-600);
 }
 
-.donateBtn {
+.linkCardBtn {
     flex-shrink: 0;
     margin-left: auto;
     background-color: var(--color-primary-light);
@@ -300,13 +300,13 @@
     transition: background-color var(--transition-fast);
 }
 
-.donateBtn:hover {
+.linkCardBtn:hover {
     background-color: var(--color-primary);
     color: var(--color-white);
     text-decoration: none;
 }
 
-.donateBtnWrap {
+.linkCardBtnWrap {
     flex-shrink: 0;
     margin-left: auto;
     display: flex;
@@ -315,7 +315,7 @@
     gap: var(--space-xs);
 }
 
-.donateBtnDisabled {
+.linkCardBtnDisabled {
     display: inline-block;
     background-color: var(--color-gray-300);
     color: var(--color-white);
@@ -326,7 +326,7 @@
     cursor: not-allowed;
 }
 
-.donateComingSoon {
+.linkCardComingSoon {
     font-size: var(--font-size-sm);
     color: var(--color-gray-600);
 }
@@ -338,29 +338,60 @@
     max-width: 700px;
 }
 
+/* ====== Volunteer panel ====== */
+.volunteerSection {
+    background-color: var(--color-gray-100);
+    border-left: 4px solid var(--color-primary);
+}
+
+.volunteerTerms {
+    display: flex;
+    flex-direction: column;
+    max-width: 700px;
+    gap: var(--space-md);
+}
+
+.volunteerTerm {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--color-primary);
+    padding: var(--space-md) var(--space-lg);
+}
+
+.volunteerTerm h4 {
+    color: var(--color-primary);
+    margin: 0 0 var(--space-xs);
+}
+
+.volunteerTerm p {
+    margin: 0;
+    color: var(--color-gray-600);
+}
+
 @media (max-width: 600px) {
-    .donateCard {
+    .linkCard {
         flex-direction: column;
         text-align: center;
     }
 
-    .donateCardImg {
+    .linkCardImg {
         width: 80px;
         height: 80px;
     }
 
-    .donateBtn,
-    .donateBtnWrap {
+    .linkCardBtn,
+    .linkCardBtnWrap {
         margin-left: 0;
         width: 100%;
     }
 
-    .donateBtn {
+    .linkCardBtn {
         display: block;
         text-align: center;
     }
 
-    .donateBtnDisabled {
+    .linkCardBtnDisabled {
         width: 100%;
         text-align: center;
     }

@@ -7,6 +7,7 @@ import { fetchUpcomingEvents, groupMeetings } from '../../api/calendar';
 import EventCard from '../../components/EventCard/EventCard';
 import EventModal from '../../components/EventModal/EventModal';
 import donateLinks from '../../data/donateLinks.json';
+import volunteerLinks from '../../data/volunteerLinks.json';
 import styles from './GetInvolved.module.css';
 
 // possible localities
@@ -37,11 +38,12 @@ const WAYS = [
         id: 2,
         title: 'Volunteer',
         desc: '(PH!)Give your time to make a better future(PH!)',
+        action: 'volunteer',
     },
     {
         id: 3,
         title: 'Attend a Meeting',
-        desc: 'From our own meetups to public forums — show up and be heard.',
+        desc: 'From our own meetups to public forums - show up, be informed, be heard.',
         action: 'meetings',
     },
     {
@@ -57,6 +59,61 @@ const WAYS = [
         action: 'follow',
     },
 ];
+
+const VOLUNTEER_TERMS = [
+    {
+        term: 'Canvassing',
+        def: '(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.(PH!)',
+    },
+    {
+        term: 'Text & Phone Banking',
+        def: '(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.(PH!)',
+    },
+    {
+        term: 'Post Cards',
+        def: '(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.(PH!)',
+    },
+];
+
+function LinkCards({ links, cta }) {
+    return (
+        <div className={styles.linkCards}>
+            {links.map((link) => (
+                <div key={link.id} className={styles.linkCard}>
+                    {link.image ? (
+                        <img
+                            className={styles.linkCardImg}
+                            src={link.image}
+                            alt={link.imageAlt}
+                        />
+                    ) : (
+                        <div className={styles.linkCardImg} />
+                    )}
+                    <div className={styles.linkCardBody}>
+                        <h3>{link.name}</h3>
+                        <p>{link.blurb}</p>
+                    </div>
+                    {link.url ? (
+                        <a
+                            className={styles.linkCardBtn}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${cta}: ${link.name} (opens in new tab)`}
+                        >
+                            {cta}
+                        </a>
+                    ) : (
+                        <div className={styles.linkCardBtnWrap}>
+                            <span className={styles.linkCardBtnDisabled}>(PH!){cta}(PH!)</span>
+                            <span className={styles.linkCardComingSoon}>(PH!)Coming soon(PH!)</span>
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
 
 // empty form data for join
 const EMPTY_JOIN = {
@@ -535,40 +592,30 @@ function GetInvolved() {
                     <div className={styles.inner}>
                         <h2>Donate</h2>
                         <p>(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit. Your financial support helps us organize events, run campaigns, and build a stronger community for young Democrats in the Northern Shenandoah Valley.(PH!)</p>
-                        <div className={styles.donateCards}>
-                            {donateLinks.map((link) => (
-                                <div key={link.id} className={styles.donateCard}>
-                                    <img
-                                        className={styles.donateCardImg}
-                                        src={link.image}
-                                        alt={link.imageAlt}
-                                    />
-                                    <div className={styles.donateCardBody}>
-                                        <h3>{link.name}</h3>
-                                        <p>{link.blurb}</p>
-                                    </div>
-                                    {link.url ? (
-                                        <a
-                                            className={styles.donateBtn}
-                                            href={link.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            aria-label={`Donate to ${link.name} (opens in new tab)`}
-                                        >
-                                            Donate
-                                        </a>
-                                    ) : (
-                                        <div className={styles.donateBtnWrap}>
-                                            <span className={styles.donateBtnDisabled}>(PH!)Donate(PH!)</span>
-                                            <span className={styles.donateComingSoon}>(PH!)Coming soon(PH!)</span>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                        <LinkCards links={donateLinks} cta="Donate" />
                         <p className={styles.donateDisclaimer}>
                             (PH!)Donation links go to third-party payment processors operated by the campaigns and organizations themselves, not by NSVYD. Contributions are not tax-deductible.(PH!)
                         </p>
+                    </div>
+                </section>
+            </div>
+
+            {/* Volunteer panel -- unfolds when action card is selected */}
+            <div className={`${styles.joinFormWrap} ${activePanel === 'volunteer' ? styles.joinFormOpen : ''}`}>
+                <section className={styles.volunteerSection}>
+                    <div className={styles.inner}>
+                        <h2>Volunteer</h2>
+                        <p>(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volunteering is one of the most impactful ways you can support Democratic candidates and causes in the Northern Shenandoah Valley. Whether you have an hour or a whole weekend, there is a role for you.(PH!)</p>
+                        <LinkCards links={volunteerLinks} cta="Sign Up" />
+                        <h3>(PH!)Common Volunteer Efforts(PH!)</h3>
+                        <div className={styles.volunteerTerms}>
+                            {VOLUNTEER_TERMS.map((item) => (
+                                <div key={item.term} className={styles.volunteerTerm}>
+                                    <h4>{item.term}</h4>
+                                    <p>{item.def}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
             </div>
