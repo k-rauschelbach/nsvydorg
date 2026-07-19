@@ -74,22 +74,34 @@ function findFeatureAt(lng, lat, geoData) {
 }
 
 // ── Geocoding ───────────────────────────────────────────────
-// Returns { lat, lng, label } or null if no match.
+// Every helper deals in candidate hits of shape { lat, lng, label }.
+// An ambiguous query ("150 N Main St") can legitimately match several
+// covered towns, so lookups return a list and the UI lets the user
+// pick when there's more than one.
 
 // Same-origin proxy to the US Census geocoder (see api/geocode.js) —
 // the Census service itself doesn't send CORS headers, so the browser
-// can't call it directly.
+// can't call it directly. The proxy dedupes matches, filters them to
+// the coverage polygons, and retries with N/S/E/W street prefixes
+// when a plain street name finds nothing covered.
 async function geocodeCensus(address) {
     const res = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
     if (!res.ok) throw new Error(`Geocode proxy HTTP ${res.status}`);
-    const data = await res.json();
-    return data.match; // { lat, lng, label } or null
+    return res.json(); // { matches: [{ lat, lng, label }], outsideCoverage }
 }
+
+// Bounding box of the five covered localities (precincts.geojson extent,
+// padded ~1 mile). Nominatim's viewbox+bounded restricts matches to this
+// area — without it, an ambiguous query like "hickory lane, woodstock"
+// can match a same-named street in another state, which the map would
+// then report as outside the coverage area.
+const COVERAGE_VIEWBOX = '-78.89,39.49,-77.81,38.58';
 
 async function geocodeNominatim(address) {
     const url =
         'https://nominatim.openstreetmap.org/search' +
-        `?format=json&countrycodes=us&limit=1&q=${encodeURIComponent(address)}`;
+        `?format=json&countrycodes=us&limit=1&bounded=1` +
+        `&viewbox=${COVERAGE_VIEWBOX}&q=${encodeURIComponent(address)}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Nominatim HTTP ${res.status}`);
     const data = await res.json();
@@ -101,16 +113,31 @@ async function geocodeNominatim(address) {
     };
 }
 
+// The site covers Virginia localities only, and the Census geocoder
+// returns nothing for a bare street address with no state — assume VA
+// when the query has neither a state hint nor a ZIP (a ZIP already
+// pins the state)
+function withDefaultState(address) {
+    if (/\b\d{5}(-\d{4})?\b/.test(address)) return address;
+    if (/\b(va|virginia)\b/i.test(address)) return address;
+    return `${address}, VA`;
+}
+
+// Returns { hits, knownOutside }: hits is a list of candidate points;
+// knownOutside means the address geocoded fine but is definitely away
+// from the coverage area (so "not found" would be the wrong message)
 async function geocode(address) {
     // Census first (authoritative for US street addresses), Nominatim as
     // fallback for things Census can't parse (place names, partial addresses)
     try {
-        const hit = await geocodeCensus(address);
-        if (hit) return hit;
+        const { matches, outsideCoverage } = await geocodeCensus(address);
+        if (matches.length > 0) return { hits: matches };
+        if (outsideCoverage) return { hits: [], knownOutside: true };
     } catch {
         // fall through to Nominatim
     }
-    return geocodeNominatim(address);
+    const hit = await geocodeNominatim(address);
+    return { hits: hit ? [hit] : [] };
 }
 
 // ── Precinct polygon styling ────────────────────────────────
@@ -130,12 +157,18 @@ function partyClass(party) {
 // when sweeping the cursor across the map
 const TOOLTIP_DELAY_MS = 200;
 
+const OUTSIDE_AREA_MSG =
+    'That address is outside our coverage area (Warren, Shenandoah, Clarke, and Frederick Counties, and Winchester City).';
+
 function Elections() {
     const [geoData, setGeoData] = useState(null);
     const [townsData, setTownsData] = useState(null); // town boundary polygons
     const [geoError, setGeoError] = useState(false);
     const [selected, setSelected] = useState(null);       // precinctInfo() of the clicked precinct
     const [addressPoint, setAddressPoint] = useState(null); // { lat, lng, label } from a search
+    // Ambiguous search: in-coverage candidates [{ hit, feature }] the
+    // user must choose between; null when there's no pending choice
+    const [candidates, setCandidates] = useState(null);
     const [query, setQuery] = useState('');
     const [searching, setSearching] = useState(false);
     const [searchError, setSearchError] = useState('');
@@ -265,6 +298,7 @@ function Elections() {
         }
         setSelected(null);
         setAddressPoint(null);
+        setCandidates(null);
         setSearchError('');
         if (map && geoData) {
             map.fitBounds(L.geoJSON(geoData).getBounds(), { padding: [12, 12] });
@@ -325,7 +359,26 @@ function Elections() {
         });
     }, [selectFeature, styleFor]);
 
-    // Address search: geocode → point-in-polygon → select that precinct
+    // Show a geocoded point on the map: exact town-limits lookup, drop
+    // the address pin, select its precinct. Used both when a search
+    // resolves uniquely and when the user picks from the candidate list.
+    const applyCandidate = useCallback(({ hit, feature }) => {
+        // Name of the containing town, null if outside every town,
+        // undefined if boundaries didn't load (falls back to
+        // precinct-level town info)
+        const town = townsData
+            ? findFeatureAt(hit.lng, hit.lat, townsData)?.properties.NAME ?? null
+            : undefined;
+
+        setCandidates(null);
+        setAddressPoint({ ...hit, town });
+        const layer = layersRef.current.get(feature.properties.UNIQUE_ID);
+        if (layer) selectFeature(feature, layer);
+    }, [townsData, selectFeature]);
+
+    // Address search: geocode → point-in-polygon → select that precinct.
+    // An ambiguous address can hit several covered towns — offer the
+    // in-coverage matches as a list instead of guessing one.
     async function handleSearch(e) {
         e.preventDefault();
         if (!query.trim() || !geoData || searching) return;
@@ -333,32 +386,35 @@ function Elections() {
         setSearching(true);
         setSearchError('');
         setAddressPoint(null);
+        setCandidates(null);
 
         try {
-            const hit = await geocode(query.trim());
-            if (!hit) {
+            const { hits, knownOutside } = await geocode(withDefaultState(query.trim()));
+            if (knownOutside) {
+                setSearchError(OUTSIDE_AREA_MSG);
+                return;
+            }
+            if (hits.length === 0) {
                 setSearchError('Could not find that address. Try adding the town and "VA".');
                 return;
             }
 
-            const feature = findFeatureAt(hit.lng, hit.lat, geoData);
-            if (!feature) {
-                setSearchError(
-                    'That address is outside our coverage area (Warren, Shenandoah, Clarke, and Frederick Counties, and Winchester City).'
-                );
+            // Resolve each hit to its precinct polygon. Census hits are
+            // pre-filtered to coverage by the proxy; this also drops any
+            // Nominatim fallback hit outside the coverage polygons.
+            const inArea = hits
+                .map((hit) => ({ hit, feature: findFeatureAt(hit.lng, hit.lat, geoData) }))
+                .filter((c) => c.feature);
+
+            if (inArea.length === 0) {
+                setSearchError(OUTSIDE_AREA_MSG);
                 return;
             }
-
-            // Exact town-limits test for the address — name of the containing
-            // town, null if outside every town, undefined if boundaries
-            // didn't load (falls back to precinct-level town info)
-            const town = townsData
-                ? findFeatureAt(hit.lng, hit.lat, townsData)?.properties.NAME ?? null
-                : undefined;
-
-            setAddressPoint({ ...hit, town });
-            const layer = layersRef.current.get(feature.properties.UNIQUE_ID);
-            if (layer) selectFeature(feature, layer);
+            if (inArea.length === 1) {
+                applyCandidate(inArea[0]);
+                return;
+            }
+            setCandidates(inArea);
         } catch {
             setSearchError('Address lookup failed — please try again in a moment.');
         } finally {
@@ -456,6 +512,33 @@ function Elections() {
                         </button>
                     </form>
                     {searchError && <p className={styles.searchError}>{searchError}</p>}
+
+                    {/* Ambiguous address: several covered locations match —
+                        the user picks instead of the map guessing */}
+                    {candidates && (
+                        <div className={styles.candidateChooser}>
+                            <p className={styles.candidateChooserLabel}>
+                                That address matches more than one place in our area
+                                - select yours:
+                            </p>
+                            <ul className={styles.candidateChoices}>
+                                {candidates.map((c) => (
+                                    <li key={c.hit.label}>
+                                        <button
+                                            type="button"
+                                            className={styles.candidateChoice}
+                                            onClick={() => applyCandidate(c)}
+                                        >
+                                            <span>{c.hit.label}</span>
+                                            <span className={styles.candidateLocality}>
+                                                {c.feature.properties.locality}
+                                            </span>
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     {/* Map color mode toggle */}
                     <div className={styles.mapControls}>

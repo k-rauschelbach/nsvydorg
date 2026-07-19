@@ -96,6 +96,58 @@
     font-size: var(--font-size-sm);
 }
 
+/* Ambiguous-address chooser: list of in-coverage matches to pick from */
+.candidateChooser {
+    margin: calc(-1 * var(--space-sm)) 0 var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--border-radius);
+}
+
+.candidateChooserLabel {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+.candidateChoices {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.candidateChoices li + li {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Full-width row button: address left, locality right */
+.candidateChoice {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-md);
+    width: 100%;
+    padding: var(--space-sm) var(--space-xs);
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    text-align: left;
+    cursor: pointer;
+}
+
+.candidateChoice:hover span:first-child {
+    text-decoration: underline;
+}
+
+.candidateLocality {
+    flex-shrink: 0;
+    color: var(--color-gray-600);
+}
+
 
 /* ============================================================
    Map color mode toggle

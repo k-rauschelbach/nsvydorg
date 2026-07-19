@@ -127,6 +127,48 @@ export const RACES = [
         candidates: [{name: 'Jason Aikens', party: 'R', website: ''}, {name: 'Vaugn Stanley Whitacre', party: 'Ind', website: ''}, {name: 'Rebecca Rager', party: 'Ind', website: ''}]
     },
     {
+        id: 'winchester-ccward1-2026',
+        office: 'City Council',
+        area: 'Winchester City - Ward 1',
+        scope: { type: 'district', fips: '840', district: 'Ward 1'},
+        candidates: [{name: 'Miles Davis', party: 'D', website: ''}, {name: 'Nancy Campbell', party: 'R', website: ''}]
+    },
+    {
+        id: 'winchester-ccward2-2026',
+        office: 'City Council',
+        area: 'Winchester City - Ward 2',
+        scope: { type: 'district', fips: '840', district: 'Ward 2'},
+        candidates: [{name: 'Emily Windle', party: 'Ind', website: ''}, {name: 'Jenny McDonald', party: 'Ind', website: ''}]
+    },
+    {
+        id: 'winchester-ccward3-2026',
+        office: 'City Council',
+        area: 'Winchester City, Ward 3',
+        scope: { type: 'district', fips: '840', district: 'Ward 3'},
+        candidates: [{name: 'Kim Herbstritt', party: 'D', website: ''}, {name: 'Brenda Kay Crouse', party: 'R', website: ''}]
+    },
+    {
+        id: 'winchester-ccward4-2026',
+        office: 'City Council',
+        area: 'Winchester City, Ward 4',
+        scope: { type: 'district', fips: '840', district: 'Ward 4'},
+        candidates: [{name: 'Klio Stroubakis', party: 'Ind', website: ''}, {name: 'Nathanial Prezzy', party: 'R', website: ''}]
+    },
+    {
+        id: 'winchester-sbward4-2026',
+        office: 'City Council',
+        area: 'Winchester City, Ward 4',
+        scope: { type: 'district', fips: '840', district: 'Ward 4'},
+        candidates: [{name: 'Donald Milton Comer III', party: 'Ind', website: ''}, {name: 'Bryan "BPG" Pearce Gonzalez', party: 'Ind', website: ''}, {name: 'Max Wise', party: 'Ind', website: ''}]
+    },
+    {
+        id: 'winchester-sbatlarge-2026',
+        office: 'School Board',
+        area: 'Winchester City - At Large',
+        scope: { type: 'locality', fips: '840'},
+        candidates: [{name: 'Kylie Gayner Zoller', party: 'Ind', website: ''}, {name: 'Melissa Harris', party: 'Ind', website: ''}]
+    },
+    {
         id: 'warren-mayor-2026',
         office: 'Mayor',
         area: 'Town of Front Royal',
