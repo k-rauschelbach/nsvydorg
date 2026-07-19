@@ -39,6 +39,37 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
+## Calendar Tagging Convention
+
+Officers managing the Google Calendar can control what appears on the site using `##tags` in event descriptions.
+
+### Tag format
+
+Tags are `##lowercase-token` strings placed anywhere in the event description (own last line preferred). A single `#` is never a tag — use `##`.
+
+### Supported tags
+
+| Tag | Effect |
+|-----|--------|
+| `##featured` | Highlights the event in the "Highlighted Events" section on the Events page |
+| `##meeting-nsvyd` | Shows event in "Our Meetings" group on the Get Involved page |
+| `##meeting-partner` | Shows event in "Partner & Community Groups" group |
+| `##meeting-gov` | Shows event in "Public & Government Meetings" group |
+| `##meeting-<name>` | Creates a new group automatically; `<name>` is title-cased for display |
+
+Events may carry multiple meeting tags and will appear in each matching group.
+
+### Migration checklist
+
+Before or at deploy, update existing events in Google Calendar:
+
+- [ ] Change any `#featured` events to `##featured`
+- [ ] Tag upcoming NSVYD general meetings with `##meeting-nsvyd`
+- [ ] Tag partner/community group meetings with `##meeting-partner`
+- [ ] Tag public forums, planning commissions, and government meetings with `##meeting-gov`
+
+---
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).

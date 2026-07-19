@@ -15,6 +15,9 @@ import googleCalendarPlugin from '@fullcalendar/google-calendar';
 // interactionPlugin is required for the eventClick callback to fire
 import interactionPlugin from '@fullcalendar/interaction';
 
+import { fetchUpcomingEvents, cleanDescription, isCalendarConfigured } from '../../api/calendar';
+import EventCard from '../../components/EventCard/EventCard';
+import EventModal from '../../components/EventModal/EventModal';
 import styles from './Events.module.css';
 
 // Read keys from .env.local at build time.
@@ -28,7 +31,7 @@ const CALENDAR_ID = process.env.REACT_APP_GOOGLE_CALENDAR_ID;
 function handleEventDidMount(info) {
     const title = info.event.title;
     if (title.length > 64) {
-        const truncated = title.slice(0, 64) + '\u2026'; // …
+        const truncated = title.slice(0, 64) + '…'; // …
         // Month / week / day grid chips
         const chipTitle = info.el.querySelector('.fc-event-title');
         if (chipTitle) chipTitle.textContent = truncated;
@@ -36,40 +39,6 @@ function handleEventDidMount(info) {
         const listTitle = info.el.querySelector('.fc-list-event-title a');
         if (listTitle) listTitle.textContent = truncated;
     }
-}
-
-const FEATURED_TAG = /#featured/i;
-
-// All-day events arrive as date-only strings ("2026-07-23"), which
-// new Date() parses as UTC midnight — the previous evening in US
-// timezones, shifting the event back a day. Parse as local instead.
-function parseLocalDate(dateStr) {
-    if (!dateStr) return new Date(NaN);
-    const [y, m, d] = dateStr.split('-').map(Number);
-    return new Date(y, m - 1, d);
-}
-
-function pickHighlights(items) {
-    const tagged = items.filter((it) => FEATURED_TAG.test(it.description || ''));
-    const chosen = tagged.length > 0 ? tagged.slice(0, 6) : items.slice(0, 3);
-    return chosen.map((it) => ({
-        id: it.id,
-        title: it.summary || '(untitled event)',
-        allDay: !it.start?.dateTime,
-        start: it.start?.dateTime
-            ? new Date(it.start.dateTime)
-            : parseLocalDate(it.start?.date),
-        end: it.end?.dateTime ? new Date(it.end.dateTime) : null,
-        extendedProps: {
-            location: it.location || '',
-            description: it.description || '',
-        },
-    }));
-}
-
-function snippet(html) {
-    const text = html.replace(/<[^>]*>/g, '').replace(/#featured/gi, '').trim();
-    return text.length > 140 ? text.slice(0, 140) + '…' : text;
 }
 
 // Memoized calendar — isolated from modal state so opening/closing the modal
@@ -123,22 +92,16 @@ const CalendarGrid = memo(function CalendarGrid({ calendarRef, onEventClick, onD
 });
 
 function Events() {
-    // selectedEvent holds the FullCalendar event object the user clicked,
-    // or null when no modal is open
+    // selectedEvent holds the plain normalized event shape, or null when no modal is open
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [highlights, setHighlights] = useState([]);
-    const mouseDownOnBackdrop = useRef(false);
     const calendarRef = useRef(null);
 
     useEffect(() => {
-        if (!API_KEY || !CALENDAR_ID) return;
-        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`
-            + `?key=${API_KEY}&timeMin=${new Date().toISOString()}`
-            + `&singleEvents=true&orderBy=startTime&maxResults=50`;
-        fetch(url)
-            .then((res) => (res.ok ? res.json() : Promise.reject()))
-            .then((data) => setHighlights(pickHighlights(data.items || [])))
-            .catch(() => setHighlights([]));
+        fetchUpcomingEvents().then((events) => {
+            const tagged = events.filter((ev) => ev.tags.includes('featured'));
+            setHighlights(tagged.length > 0 ? tagged.slice(0, 6) : events.slice(0, 3));
+        });
     }, []);
 
     // Stable references so CalendarGrid's memo check passes when modal opens/closes
@@ -146,7 +109,18 @@ function Events() {
         // Without preventDefault, FullCalendar would navigate to the
         // event's Google Calendar URL instead of opening our modal
         clickInfo.jsEvent.preventDefault();
-        setSelectedEvent(clickInfo.event);
+        const ev = clickInfo.event;
+        // FullCalendar surfaces location/description under extendedProps;
+        // description is raw HTML so run it through cleanDescription.
+        setSelectedEvent({
+            id: ev.id,
+            title: ev.title,
+            start: ev.start,
+            end: ev.end,
+            allDay: ev.allDay,
+            location: ev.extendedProps?.location || '',
+            description: cleanDescription(ev.extendedProps?.description || ''),
+        });
     }, []);
 
     const handleDateClick = useCallback((info) => {
@@ -154,54 +128,6 @@ function Events() {
         api.gotoDate(info.date);
         api.changeView('timeGridDay');
     }, []);
-
-    // Close the modal when the user clicks on the dark backdrop
-    // (but not when clicking inside the modal panel itself).
-    // Track mousedown origin so dragging from inside the modal to outside
-    // the backdrop does not accidentally close it.
-    function handleBackdropMouseDown(e) {
-        mouseDownOnBackdrop.current = e.target === e.currentTarget;
-    }
-
-    function handleBackdropClick(e) {
-        if (e.target === e.currentTarget && mouseDownOnBackdrop.current) {
-            setSelectedEvent(null);
-        }
-    }
-
-    // Safely extract display values from the selected event.
-    // Google Calendar-specific fields (location, description) surface
-    // under extendedProps in FullCalendar's event object.
-    const modalTitle = selectedEvent ? selectedEvent.title : '';
-
-    // All-day events (highlight cards and FullCalendar events both carry
-    // .allDay) get the date only — no meaningless "12:00 AM" time
-    const modalStart = selectedEvent?.start
-        ? selectedEvent.start.toLocaleString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              ...(selectedEvent.allDay ? {} : { hour: 'numeric', minute: '2-digit' }),
-          })
-        : '';
-
-    const modalEnd =
-        selectedEvent && selectedEvent.end && !selectedEvent.allDay
-            ? selectedEvent.end.toLocaleString('en-US', {
-                  hour: 'numeric',
-                  minute: '2-digit',
-              })
-            : '';
-
-    const modalLocation =
-        selectedEvent ? selectedEvent.extendedProps.location || '' : '';
-
-    const modalDescription =
-        selectedEvent ? selectedEvent.extendedProps.description || '' : '';
-
-    // Show a developer-friendly error if the .env.local file is missing or empty
-    const isMisconfigured = !API_KEY || !CALENDAR_ID;
 
     return (
         <div>
@@ -218,7 +144,7 @@ function Events() {
             <section className={styles.calendarSection}>
                 <div className={styles.calendarInner}>
                     <div className={styles.calendarCard}>
-                        {isMisconfigured ? (
+                        {!isCalendarConfigured() ? (
                             <p className={styles.errorMessage}>
                                 Calendar not configured. Add{' '}
                                 <code>REACT_APP_GOOGLE_CALENDAR_API_KEY</code> and{' '}
@@ -242,91 +168,19 @@ function Events() {
                         <h2>Highlighted Events</h2>
                         <div className={styles.highlightGrid}>
                             {highlights.map((ev) => (
-                                <button
+                                <EventCard
                                     key={ev.id}
-                                    type="button"
-                                    className={styles.eventCard}
+                                    event={ev}
                                     onClick={() => setSelectedEvent(ev)}
-                                >
-                                    <div className={styles.dateBadge}>
-                                        <span className={styles.dateBadgeDay}>
-                                            {ev.start.getDate()}
-                                        </span>
-                                        <span className={styles.dateBadgeMonth}>
-                                            {ev.start.toLocaleString('en-US', { month: 'short' })}
-                                        </span>
-                                    </div>
-                                    <h3>{ev.title}</h3>
-                                    <p className={styles.eventCardMeta}>
-                                        {ev.allDay
-                                            ? ev.start.toLocaleDateString('en-US', { weekday: 'long' }) + ' · All day'
-                                            : ev.start.toLocaleString('en-US', {
-                                                  weekday: 'long', hour: 'numeric', minute: '2-digit',
-                                              })}
-                                    </p>
-                                    {ev.extendedProps.location && (
-                                        <p className={styles.eventCardMeta}>&#128205; {ev.extendedProps.location}</p>
-                                    )}
-                                    {ev.extendedProps.description && (
-                                        <p className={styles.eventCardDesc}>
-                                            {snippet(ev.extendedProps.description)}
-                                        </p>
-                                    )}
-                                </button>
+                                />
                             ))}
                         </div>
                     </div>
                 </section>
             )}
 
-            {/* Event detail modal — only mounted when selectedEvent is non-null */}
             {selectedEvent && (
-                <div
-                    className={styles.modalBackdrop}
-                    onMouseDown={handleBackdropMouseDown}
-                    onClick={handleBackdropClick}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label={modalTitle}
-                >
-                    <div className={styles.modal}>
-
-                        {/* Close button — top-right corner of the modal panel */}
-                        <button
-                            className={styles.modalClose}
-                            onClick={() => setSelectedEvent(null)}
-                            aria-label="Close event details"
-                        >
-                            &times;
-                        </button>
-
-                        <h2 className={styles.modalTitle}>{modalTitle}</h2>
-
-                        {/* Date and optional end time */}
-                        <p className={styles.modalMeta}>
-                            {modalStart}{modalEnd && ` – ${modalEnd}`}
-                        </p>
-
-                        {/* Location — only rendered if the event has one */}
-                        {modalLocation && (
-                            <p className={styles.modalMeta}>
-                                {/* Map pin emoji via HTML entity */}
-                                &#128205; {modalLocation}
-                            </p>
-                        )}
-
-                        {/* Description — only rendered if the event has one.
-                            Google Calendar can embed HTML in descriptions,
-                            so we strip tags with a simple regex to keep the
-                            modal plain-text without using dangerouslySetInnerHTML */}
-                        {modalDescription && (
-                            <p className={styles.modalDescription}>
-                                {modalDescription.replace(/<[^>]*>/g, '').replace(/#featured/gi, '').trim()}
-                            </p>
-                        )}
-
-                    </div>
-                </div>
+                <EventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
             )}
 
         </div>

@@ -1,8 +1,11 @@
 // GetInvolved.js -- Join, volunteer, donate, and contact form page
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { fetchUpcomingEvents, groupMeetings } from '../../api/calendar';
+import EventCard from '../../components/EventCard/EventCard';
+import EventModal from '../../components/EventModal/EventModal';
 import styles from './GetInvolved.module.css';
 
 // possible localities
@@ -36,8 +39,9 @@ const WAYS = [
     },
     {
         id: 3,
-        title: '(PH!)Attend a Meeting',
-        desc: "(PH!)Our monthly general meetings are open to everyone(PH!)",
+        title: 'Attend a Meeting',
+        desc: 'From our own meetups to public forums — show up and be heard.',
+        action: 'meetings',
     },
     {
         id: 4,
@@ -62,12 +66,12 @@ const EMPTY_JOIN = {
 };
 
 function GetInvolved() {
-    
+
     // get logged in user role
     const { userRole } = useAuth();
-    
+
     const navigate = useNavigate();
-    
+
     // ======> contact form <======
     // useState tracks each form field so React controls the inputs (controlled components)
     const [formData, setFormData] = useState({
@@ -105,15 +109,28 @@ function GetInvolved() {
             alert('Something went wrong. Please try again later.')
         }
     }
-    
+
     // ======> action panels <======
-    // null = none , 'join' = member form , 'follow' = social media links'
+    // null = none , 'join' = member form , 'follow' = social media links, 'meetings' = meeting list
     const [activePanel, setActivePanel] = useState(null);
-    
+
     // ======> join form <======
     const [joinData, setJoinData] = useState(EMPTY_JOIN);
     const [joinStatus, setJoinStatus] = useState('idle'); // idle, submitting, success, error
-    
+
+    // ======> meetings panel <======
+    const [meetingGroups, setMeetingGroups] = useState([]);
+    const [selectedMeeting, setSelectedMeeting] = useState(null);
+
+    useEffect(() => {
+        fetchUpcomingEvents().then((events) => {
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() + 60);
+            const upcoming = events.filter((ev) => ev.start <= cutoff);
+            setMeetingGroups(groupMeetings(upcoming));
+        });
+    }, []);
+
     function handleJoinChange(e) {
         const { name, value, type, checked } = e.target;
         if (type === 'checkbox') {
@@ -138,7 +155,7 @@ function GetInvolved() {
             setJoinData(prev => ({ ...prev, [name]: value }));
         }
     }
-    
+
     async function handleJoinSubmit(e) {
         e.preventDefault();
         setJoinStatus('submitting');
@@ -189,7 +206,7 @@ function GetInvolved() {
                 <div className={styles.inner}>
                     <h2>How to Help</h2>
                     <div className={styles.waysGrid}>
-                        {WAYS.map((way) => 
+                        {WAYS.map((way) =>
                             way.action ? (
                                 <button
                                     key={way.id}
@@ -230,8 +247,8 @@ function GetInvolved() {
                                     onClick={() => navigate('/member')}
                                     >
                                     Want to add a new member?
-                                </button>  
-                            </div>  
+                                </button>
+                            </div>
                         ) : (
                             /* Non-member form */
                             <>
@@ -248,7 +265,7 @@ function GetInvolved() {
                                         Something went wrong. Please try again or contact us directly.
                                     </p>
                                 )}
-                                
+
                                 <p className={styles.reqLegend}><span aria-hidden="true">*</span> Required</p>
                                 <form className={styles.form} onSubmit={handleJoinSubmit}>
                                     <div className={styles.formRow}>
@@ -269,7 +286,7 @@ function GetInvolved() {
                                                    required />
                                         </div>
                                     </div>
-                                    
+
                                     <div className={styles.formRow}>
                                         <div className={styles.formGroup}>
                                             <label htmlFor={"dobMonth"}>Date of Birth <span className={styles.reqMark} aria-hidden="true">*</span></label>
@@ -311,7 +328,7 @@ function GetInvolved() {
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     <div className={styles.formGroup}>
                                         <label htmlFor={"email"}>Email Address <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                         <input type={"email"} id ="email" name={"email"}
@@ -321,7 +338,7 @@ function GetInvolved() {
                                                required
                                         />
                                     </div>
-                                    
+
                                     <div className={styles.formGroup}>
                                         <label htmlFor={"locality"}>Locality <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                         <select id={"locality"} name={"locality"}
@@ -345,7 +362,7 @@ function GetInvolved() {
                                             />
                                         )}
                                     </div>
-                                    
+
                                     <div className={styles.formGroup}>
                                         <label htmlFor={"registered"}>Are you currently registered to vote? <span className={styles.reqMark} aria-hidden="true">*</span></label>
                                         <select id={"registered"} name={"registered"}
@@ -356,7 +373,7 @@ function GetInvolved() {
                                             <option value={"Not Sure"}>Not Sure</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div className={styles.formGroup}>
                                         <label>When are you most available for meetings during the week?</label>
                                         <div className={styles.availabilityGroup}>
@@ -374,21 +391,21 @@ function GetInvolved() {
                                             ))}
                                         </div>
                                     </div>
-                                    
+
                                     <div className={styles.formGroup}>
                                         <label htmlFor={"skills"}>Do you have any specific skills or talents?</label>
                                         <textarea id={"skills"} name={"skills"} rows={3}
                                                   placeholder={"e.g. graphic design, canvassing, social media, etc..."}
                                                   value={joinData.skills} onChange={handleJoinChange} />
                                     </div>
-                                    
+
                                     <div className={styles.formGroup}>
                                         <label htmlFor={"issues"}>What issues are you most passionate about?</label>
                                         <textarea id={"issues"} name={"issues"} rows={3}
                                                   placeholder={"e.g. affordability, healthcare, education, etc..."}
                                                   value={joinData.issues} onChange={handleJoinChange} />
                                     </div>
-                                    
+
                                     <button
                                         type={"submit"}
                                         className={styles.submitBtn}
@@ -396,11 +413,56 @@ function GetInvolved() {
                                         >
                                         {joinStatus === 'submitting' ? 'Submitting...' : 'Join NSVYD!'}
                                     </button>
-                                    
+
                                 </form>
                             </>
                             )
                         }
+                    </div>
+                </section>
+            </div>
+
+            {/* Attend a Meeting panel -- unfolds when action card is selected */}
+            <div className={`${styles.joinFormWrap} ${activePanel === 'meetings' ? styles.meetingsFormOpen : ''}`}>
+                <section className={styles.meetingsSection}>
+                    <div className={styles.inner}>
+                        <h2>Upcoming Meetings</h2>
+                        <p>Find a meeting near you and show up. Every voice matters.</p>
+                        {meetingGroups.length === 0 ? (
+                            <p>
+                                No public meetings on the calendar right now —{' '}
+                                <Link to="/events">check the full calendar</Link> for other events.
+                            </p>
+                        ) : (
+                            <>
+                                {meetingGroups.map((group) => {
+                                    const shown = group.events.slice(0, 4);
+                                    const overflow = group.events.length - 4;
+                                    return (
+                                        <div key={group.slug} className={styles.meetingGroup}>
+                                            <h3>{group.label}</h3>
+                                            <div className={styles.meetingGrid}>
+                                                {shown.map((ev) => (
+                                                    <EventCard
+                                                        key={ev.id}
+                                                        event={ev}
+                                                        onClick={() => setSelectedMeeting(ev)}
+                                                    />
+                                                ))}
+                                            </div>
+                                            {overflow > 0 && (
+                                                <p className={styles.meetingMore}>
+                                                    <Link to="/events">+{overflow} more on the calendar</Link>
+                                                </p>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                                <p className={styles.meetingFooter}>
+                                    <Link to="/events">See the full calendar →</Link>
+                                </p>
+                            </>
+                        )}
                     </div>
                 </section>
             </div>
@@ -528,6 +590,10 @@ function GetInvolved() {
                     </form>
                 </div>
             </section>
+
+            {selectedMeeting && (
+                <EventModal event={selectedMeeting} onClose={() => setSelectedMeeting(null)} />
+            )}
 
         </div>
     );
