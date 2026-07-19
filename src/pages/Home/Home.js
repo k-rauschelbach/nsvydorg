@@ -55,7 +55,7 @@ function Home() {
                         <div className={styles.card}>
                             <h3>Advocate</h3>
                             <p>
-                                (PH!)e engage local government and advocate for policies
+                                (PH!)We engage local government and advocate for policies
                                 that build for the future.(PH!)
                             </p>
                         </div>
