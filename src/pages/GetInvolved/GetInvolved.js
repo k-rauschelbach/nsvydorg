@@ -120,6 +120,9 @@ function GetInvolved() {
 
     // ======> meetings panel <======
     const [meetingGroups, setMeetingGroups] = useState([]);
+    // distinguishes "still fetching" from "fetched, nothing found" so the
+    // empty-state message never flashes before the events arrive
+    const [meetingsLoaded, setMeetingsLoaded] = useState(false);
     const [selectedMeeting, setSelectedMeeting] = useState(null);
 
     useEffect(() => {
@@ -128,6 +131,7 @@ function GetInvolved() {
             cutoff.setDate(cutoff.getDate() + 60);
             const upcoming = events.filter((ev) => ev.start <= cutoff);
             setMeetingGroups(groupMeetings(upcoming));
+            setMeetingsLoaded(true);
         });
     }, []);
 
@@ -428,9 +432,11 @@ function GetInvolved() {
                     <div className={styles.inner}>
                         <h2>Upcoming Meetings</h2>
                         <p>Find a meeting near you and show up. Every voice matters.</p>
-                        {meetingGroups.length === 0 ? (
+                        {!meetingsLoaded ? (
+                            <p>Loading meetings…</p>
+                        ) : meetingGroups.length === 0 ? (
                             <p>
-                                No public meetings on the calendar right now —{' '}
+                                No public meetings on the calendar right now -{' '}
                                 <Link to="/events">check the full calendar</Link> for other events.
                             </p>
                         ) : (
