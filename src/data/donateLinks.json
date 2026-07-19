@@ -1,0 +1,18 @@
+[
+  {
+    "id": "nsvyd",
+    "name": "NSVYD",
+    "blurb": "(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.(PH!)",
+    "image": "/NSVYD_Transparent_Logo.png",
+    "imageAlt": "NSVYD logo",
+    "url": "https://secure.actblue.com/donate/northern-shenandoah-valley-young-democrats-1"
+  },
+  {
+    "id": "beth-macy",
+    "name": "Beth Macy",
+    "blurb": "(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.(PH!)",
+    "image": "/bethmacycampaignflagblue.png",
+    "imageAlt": "Beth Macy",
+    "url": "https://secure.actblue.com/donate/bm-web"
+  }
+]

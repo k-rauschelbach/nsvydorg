@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { fetchUpcomingEvents, groupMeetings } from '../../api/calendar';
 import EventCard from '../../components/EventCard/EventCard';
 import EventModal from '../../components/EventModal/EventModal';
+import donateLinks from '../../data/donateLinks.json';
 import styles from './GetInvolved.module.css';
 
 // possible localities
@@ -45,8 +46,9 @@ const WAYS = [
     },
     {
         id: 4,
-        title: '(PH!)Donate',
+        title: 'Donate',
         desc: '(PH!)Financial contributions help us(PH!)',
+        action: 'donate',
     },
     {
         id: 5,
@@ -525,6 +527,50 @@ function GetInvolved() {
                          </div>
                      </div>
                  </section>
+            </div>
+
+            {/* Donate panel -- unfolds when action card is selected */}
+            <div className={`${styles.joinFormWrap} ${activePanel === 'donate' ? styles.joinFormOpen : ''}`}>
+                <section className={styles.donateSection}>
+                    <div className={styles.inner}>
+                        <h2>Donate</h2>
+                        <p>(PH!)Lorem ipsum dolor sit amet, consectetur adipiscing elit. Your financial support helps us organize events, run campaigns, and build a stronger community for young Democrats in the Northern Shenandoah Valley.(PH!)</p>
+                        <div className={styles.donateCards}>
+                            {donateLinks.map((link) => (
+                                <div key={link.id} className={styles.donateCard}>
+                                    <img
+                                        className={styles.donateCardImg}
+                                        src={link.image}
+                                        alt={link.imageAlt}
+                                    />
+                                    <div className={styles.donateCardBody}>
+                                        <h3>{link.name}</h3>
+                                        <p>{link.blurb}</p>
+                                    </div>
+                                    {link.url ? (
+                                        <a
+                                            className={styles.donateBtn}
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label={`Donate to ${link.name} (opens in new tab)`}
+                                        >
+                                            Donate
+                                        </a>
+                                    ) : (
+                                        <div className={styles.donateBtnWrap}>
+                                            <span className={styles.donateBtnDisabled}>(PH!)Donate(PH!)</span>
+                                            <span className={styles.donateComingSoon}>(PH!)Coming soon(PH!)</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        <p className={styles.donateDisclaimer}>
+                            (PH!)Donation links go to third-party payment processors operated by the campaigns and organizations themselves, not by NSVYD. Contributions are not tax-deductible.(PH!)
+                        </p>
+                    </div>
+                </section>
             </div>
 
             {/* Contact form */}
