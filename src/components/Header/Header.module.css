@@ -135,6 +135,9 @@
     font-weight: 500;
     cursor: pointer;
     font-family: inherit;
+    /* Buttons don't inherit line-height, which made this look like a
+       different font than the surrounding links */
+    line-height: inherit;
     padding: 0 0 2px;
     border-bottom: 2px solid transparent;
     white-space: nowrap;
@@ -150,43 +153,58 @@
     border-bottom-color: rgba(255, 255, 255, 0.6);
 }
 
-/* Mobile: same winged layout scaled down — 90px logo centered in the bar,
-   fluid link size so all 5 links fit beside it down to ~320px screens */
+/* ── Mobile dropdown menu ───────────────────────────────────────────────── */
+
+/* Hidden on desktop, where the wings hold the links */
+.mobileMenu {
+    display: none;
+}
+
+/* Mobile: 5 links + the logo bug can't share a phone-width bar, so the
+   header collapses to just the centered circle — tapping it drops the
+   menu down below */
 @media (max-width: 700px) {
     .inner {
-        grid-template-columns: 1fr auto 1fr;
+        grid-template-columns: 1fr;
+        justify-items: center;
         padding: var(--space-xs) 0 0;
     }
 
     .navLeft,
     .navRight {
-        max-width: none;
-        min-width: 0;
-        padding: var(--space-xs) 0;
-        /* 90px logo → wing centers align 45px from its top */
-        top: 45px;
-    }
-
-    .navLeft {
-        padding-right: 10px;
-        margin-right: -10px;
-    }
-
-    .navRight {
-        padding-left: 10px;
-        margin-left: -10px;
-    }
-
-    .navLeft a,
-    .navRight a,
-    .memberBtn,
-    .memberBtnActive {
-        font-size: clamp(0.65rem, 3vw, 0.875rem);
+        display: none;
     }
 
     .logoBug {
         width: 90px;
         height: 90px;
         margin-bottom: -30px;
+    }
+
+    .mobileMenu a,
+    .mobileMenu button {
+        color: var(--color-white);
+        font-family: inherit;
+        line-height: inherit;
+        font-size: var(--font-size-lg);
+        font-weight: 500;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: var(--space-xs) 0 2px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .menuOpen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-sm);
+        background-color: var(--color-primary-dark);
+        border-top: 2px solid var(--color-accent);
+        border-bottom: 2px solid var(--color-accent);
+        /* Extra top padding clears the logo hanging ~30px into the panel */
+        padding: calc(30px + var(--space-md)) 0 var(--space-md);
     }
 }
