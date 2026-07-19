@@ -108,6 +108,14 @@
     overflow: hidden;
     max-height: 0;
     transition: max-height 500ms ease;
+    /* Keeps the panel top clear of the fixed header when scrolled into view */
+    scroll-margin-top: 124px;
+}
+
+@media (max-width: 700px) {
+    .joinFormWrap {
+        scroll-margin-top: 84px;
+    }
 }
 
 .joinFormOpen {
@@ -411,6 +419,14 @@
     gap: var(--space-lg);
 }
 
+/* Two fields side by side (the base rule was missing, so the 480px override
+   never had anything to collapse) */
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
 /* mobile adapt */
 @media (max-width: 480px) {
     .formRow {
@@ -613,4 +629,14 @@
 
 .submitBtn:hover {
     background-color: var(--color-primary-dark);
+}
+
+/* Availability checkboxes: undo the full-width text-input styling that the
+   shared .formGroup input rules apply, which mangled the day pills */
+.checkLabel input {
+    width: auto;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: var(--color-primary);
 }

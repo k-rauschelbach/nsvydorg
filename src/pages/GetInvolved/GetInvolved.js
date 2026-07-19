@@ -1,6 +1,6 @@
 // GetInvolved.js -- Join, volunteer, donate, and contact form page
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { fetchUpcomingEvents, groupMeetings } from '../../api/calendar';
@@ -173,6 +173,32 @@ function GetInvolved() {
     // null = none , 'join' = member form , 'follow' = social media links, 'meetings' = meeting list
     const [activePanel, setActivePanel] = useState(null);
 
+    // one ref per unfold panel so opening a card can scroll the user to it
+    const panelRefs = useRef({});
+
+    function togglePanel(action) {
+        const next = activePanel === action ? null : action;
+        setActivePanel(next);
+        if (next) {
+            // On phones the cards stack, so the panel unfolds screens below the
+            // tapped card -- scroll to it. Three passes because (a) mid-unfold
+            // the browser clamps scrolls to the not-yet-full page height, and
+            // (b) systems with animations disabled silently ignore smooth
+            // scrolling, so the last pass snaps instantly if we never arrived.
+            const nudge = (behavior) => {
+                const el = panelRefs.current[next];
+                if (!el) return;
+                const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+                if (Math.abs(el.getBoundingClientRect().top - margin) > 10) {
+                    el.scrollIntoView({ behavior, block: 'start' });
+                }
+            };
+            setTimeout(() => nudge('smooth'), 50);
+            setTimeout(() => nudge('smooth'), 600);
+            setTimeout(() => nudge('auto'), 1100);
+        }
+    }
+
     // ======> join form <======
     const [joinData, setJoinData] = useState(EMPTY_JOIN);
     const [joinStatus, setJoinStatus] = useState('idle'); // idle, submitting, success, error
@@ -275,7 +301,7 @@ function GetInvolved() {
                                     key={way.id}
                                     type="button"
                                     className={`${styles.wayCard} ${styles.wayCardBtn} ${activePanel === way.action ? styles.wayCardActive : ''}`}
-                                    onClick={() => setActivePanel(prev => prev === way.action ? null : way.action)}
+                                    onClick={() => togglePanel(way.action)}
                                     >
                                     <h3>{way.title}</h3>
                                     <p>{way.desc}</p>
@@ -291,7 +317,8 @@ function GetInvolved() {
             </section>
 
             {/* Membership form -- unfolds when action card is selected */}
-            <div className={`${styles.joinFormWrap} ${activePanel === 'join' ? styles.joinFormOpen : ''}`}>
+            <div ref={el => (panelRefs.current.join = el)}
+                 className={`${styles.joinFormWrap} ${activePanel === 'join' ? styles.joinFormOpen : ''}`}>
                 <section className={styles.joinSection}>
                     <div className={styles.inner}>
 
@@ -486,7 +513,8 @@ function GetInvolved() {
             </div>
 
             {/* Attend a Meeting panel -- unfolds when action card is selected */}
-            <div className={`${styles.joinFormWrap} ${activePanel === 'meetings' ? styles.meetingsFormOpen : ''}`}>
+            <div ref={el => (panelRefs.current.meetings = el)}
+                 className={`${styles.joinFormWrap} ${activePanel === 'meetings' ? styles.meetingsFormOpen : ''}`}>
                 <section className={styles.meetingsSection}>
                     <div className={styles.inner}>
                         <h2>Upcoming Meetings</h2>
@@ -533,7 +561,8 @@ function GetInvolved() {
             </div>
 
             {/* Follow us panel -- unfolds when action card is selected */}
-            <div className={`${styles.joinFormWrap} ${activePanel === 'follow' ? styles.joinFormOpen : ''}`}>
+            <div ref={el => (panelRefs.current.follow = el)}
+                 className={`${styles.joinFormWrap} ${activePanel === 'follow' ? styles.joinFormOpen : ''}`}>
                  <section className={styles.followSection}>
                      <div className={styles.inner}>
                          <h2>Follow Us</h2>
@@ -587,7 +616,8 @@ function GetInvolved() {
             </div>
 
             {/* Donate panel -- unfolds when action card is selected */}
-            <div className={`${styles.joinFormWrap} ${activePanel === 'donate' ? styles.joinFormOpen : ''}`}>
+            <div ref={el => (panelRefs.current.donate = el)}
+                 className={`${styles.joinFormWrap} ${activePanel === 'donate' ? styles.joinFormOpen : ''}`}>
                 <section className={styles.donateSection}>
                     <div className={styles.inner}>
                         <h2>Donate</h2>
@@ -601,7 +631,8 @@ function GetInvolved() {
             </div>
 
             {/* Volunteer panel -- unfolds when action card is selected */}
-            <div className={`${styles.joinFormWrap} ${activePanel === 'volunteer' ? styles.joinFormOpen : ''}`}>
+            <div ref={el => (panelRefs.current.volunteer = el)}
+                 className={`${styles.joinFormWrap} ${activePanel === 'volunteer' ? styles.joinFormOpen : ''}`}>
                 <section className={styles.volunteerSection}>
                     <div className={styles.inner}>
                         <h2>Volunteer</h2>
