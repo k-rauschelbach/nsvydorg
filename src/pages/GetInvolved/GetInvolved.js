@@ -25,14 +25,14 @@ function daysInMonth(month, year) {
 const WAYS = [
     {
         id: 1,
-        title: '(PH!)Join as a Member',
-        desc: '(PH!)Sign up to become an official member of NSVYD(PH!)',
+        title: 'Join as a Member',
+        desc: 'Sign up to become an official member of NSVYD',
         action: 'join',
     },
     {
         id: 2,
-        title: '(PH!)Volunteer',
-        desc: '(PH!)',
+        title: 'Volunteer',
+        desc: '(PH!)Give your time to make a better future(PH!)',
     },
     {
         id: 3,
