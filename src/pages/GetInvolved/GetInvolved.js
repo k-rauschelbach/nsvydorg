@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { fetchUpcomingEvents, groupMeetings } from '../../api/calendar';
 import EventCard from '../../components/EventCard/EventCard';
 import EventModal from '../../components/EventModal/EventModal';
+import Turnstile, { isTurnstileConfigured } from '../../components/Turnstile/Turnstile';
 import donateLinks from '../../data/donateLinks.json';
 import volunteerLinks from '../../data/volunteerLinks.json';
 import styles from './GetInvolved.module.css';
@@ -122,6 +123,7 @@ const EMPTY_JOIN = {
     email: '', phone: '',
     locality: '', localityOther: '',
     registered: '', availability: [], skills: '', issues: '',
+    company: '', // honeypot — see the hidden input in the join form
 };
 
 function GetInvolved() {
@@ -138,7 +140,14 @@ function GetInvolved() {
         email: '',
         subject: '',
         message: '',
+        company: '', // honeypot — see the hidden input in the contact form
     });
+
+    // Turnstile token for the contact form. Null until the widget solves the
+    // challenge, and cleared again after each submit since tokens are
+    // single-use. The ref resets the widget so it issues a fresh one.
+    const [contactToken, setContactToken] = useState(null);
+    const contactTurnstileRef = useRef(null);
 
     // Called whenever any input changes.
     // e.target.name matches the name attribute on each <input>/<textarea>.
@@ -151,21 +160,34 @@ function GetInvolved() {
     // Called when the form is submitted
     async function handleSubmit(e) {
         e.preventDefault(); // Prevent the default browser behavior (page reload)
+
+        // The server rejects a missing token anyway; catching it here gives a
+        // clearer message than a generic failure.
+        if (isTurnstileConfigured() && !contactToken) {
+            alert('Please wait a moment for the verification check to finish, then try again.');
+            return;
+        }
+
         try {
             const res = await fetch('/api/send-contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, turnstileToken: contactToken }),
             });
             if (res.ok) {
                 alert('Thank you for your message! We will be in touch soon.');
-                setFormData({ name: '', email: '', subject: '', message: '' }); // reset form to empty strings
+                setFormData({ name: '', email: '', subject: '', message: '', company: '' }); // reset form to empty strings
             } else {
                 alert('Something went wrong. Please try again later.')
             }
         } catch {
             // fetch itself failed (network error) -- surface the same message
             alert('Something went wrong. Please try again later.')
+        } finally {
+            // Tokens are single-use — burn this one and request a fresh
+            // challenge whether or not the send succeeded, so a retry works.
+            setContactToken(null);
+            contactTurnstileRef.current?.reset();
         }
     }
 
@@ -202,6 +224,11 @@ function GetInvolved() {
     // ======> join form <======
     const [joinData, setJoinData] = useState(EMPTY_JOIN);
     const [joinStatus, setJoinStatus] = useState('idle'); // idle, submitting, success, error
+
+    // Separate Turnstile instance from the contact form — each widget issues
+    // its own single-use token.
+    const [joinToken, setJoinToken] = useState(null);
+    const joinTurnstileRef = useRef(null);
 
     // ======> meetings panel <======
     const [meetingGroups, setMeetingGroups] = useState([]);
@@ -247,6 +274,12 @@ function GetInvolved() {
 
     async function handleJoinSubmit(e) {
         e.preventDefault();
+
+        if (isTurnstileConfigured() && !joinToken) {
+            setJoinStatus('error');
+            return;
+        }
+
         setJoinStatus('submitting');
         //merge locality data, combine DOB parts, and combine name into one field
         const { localityOther, dobMonth, dobDay, dobYear, firstName, lastName, ...rest } = joinData;
@@ -254,10 +287,11 @@ function GetInvolved() {
             ? `${dobYear}-${String(dobMonth).padStart(2,'0')}-${String(dobDay).padStart(2,'0')}`
             : '';
         const payload = {
-            ...rest,
+            ...rest, // includes the 'company' honeypot, which the server checks
             name: `${firstName} ${lastName}`.trim(),
             dob,
             locality: joinData.locality === 'Other' ? localityOther : joinData.locality,
+            turnstileToken: joinToken,
         };
         try {
             const res = await fetch('/api/join-member', {
@@ -276,6 +310,11 @@ function GetInvolved() {
             // fetch itself failed (network error) -- without this the form
             // would be stuck on 'submitting' with the button disabled
             setJoinStatus('error');
+        } finally {
+            // Single-use token: clear it and re-challenge so a retry after an
+            // error still has a valid one.
+            setJoinToken(null);
+            joinTurnstileRef.current?.reset();
         }
     }
 
@@ -486,15 +525,37 @@ function GetInvolved() {
                                         <label htmlFor={"skills"}>Do you have any specific skills or talents?</label>
                                         <textarea id={"skills"} name={"skills"} rows={3}
                                                   placeholder={"e.g. graphic design, canvassing, social media, etc..."}
-                                                  value={joinData.skills} onChange={handleJoinChange} />
+                                                  value={joinData.skills} onChange={handleJoinChange}
+                                                  maxLength={5000} />
                                     </div>
 
                                     <div className={styles.formGroup}>
                                         <label htmlFor={"issues"}>What issues are you most passionate about?</label>
                                         <textarea id={"issues"} name={"issues"} rows={3}
                                                   placeholder={"e.g. affordability, healthcare, education, etc..."}
-                                                  value={joinData.issues} onChange={handleJoinChange} />
+                                                  value={joinData.issues} onChange={handleJoinChange}
+                                                  maxLength={5000} />
                                     </div>
+
+                                    {/* Honeypot — see the note on the contact form's copy */}
+                                    <div className={styles.honeypot} aria-hidden="true">
+                                        <label htmlFor={"join-company"}>Company (leave blank)</label>
+                                        <input
+                                            type={"text"}
+                                            id={"join-company"}
+                                            name={"company"}
+                                            value={joinData.company}
+                                            onChange={handleJoinChange}
+                                            tabIndex={-1}
+                                            autoComplete={"off"}
+                                        />
+                                    </div>
+
+                                    <Turnstile
+                                        ref={joinTurnstileRef}
+                                        onVerify={setJoinToken}
+                                        onExpire={() => setJoinToken(null)}
+                                    />
 
                                     <button
                                         type={"submit"}
@@ -671,6 +732,7 @@ function GetInvolved() {
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
+                                maxLength={240}
                             />
                         </div>
 
@@ -696,6 +758,7 @@ function GetInvolved() {
                                 placeholder="How can we help?"
                                 value={formData.subject}
                                 onChange={handleChange}
+                                maxLength={240}
                             />
                         </div>
 
@@ -710,8 +773,32 @@ function GetInvolved() {
                                 value={formData.message}
                                 onChange={handleChange}
                                 required
+                                maxLength={5000}
                             />
                         </div>
+
+                        {/* Honeypot: positioned off-screen rather than
+                            display:none, which bots learn to skip. Hidden from
+                            screen readers and removed from the tab order so no
+                            real user can reach it. */}
+                        <div className={styles.honeypot} aria-hidden="true">
+                            <label htmlFor="company">Company (leave blank)</label>
+                            <input
+                                type="text"
+                                id="company"
+                                name="company"
+                                value={formData.company}
+                                onChange={handleChange}
+                                tabIndex={-1}
+                                autoComplete="off"
+                            />
+                        </div>
+
+                        <Turnstile
+                            ref={contactTurnstileRef}
+                            onVerify={setContactToken}
+                            onExpire={() => setContactToken(null)}
+                        />
 
                         <button type="submit" className={styles.submitBtn}>
                             Send Message

@@ -640,3 +640,17 @@
     flex-shrink: 0;
     accent-color: var(--color-primary);
 }
+
+/* Honeypot wrapper — a decoy field for spam bots.
+   Deliberately NOT display:none or visibility:hidden: scrapers check for
+   both and skip those fields. Pulling it off-screen leaves it in the DOM
+   looking like a normal input to a bot, while no sighted user can see it,
+   no screen reader announces it (aria-hidden), and no keyboard user can
+   tab into it (tabIndex -1). Any submission with this filled is automated. */
+.honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}

@@ -4,6 +4,8 @@
 // from their inbox without needing to copy/paste the sender's address.
 
 const { Resend } = require('resend');
+const { verifyTurnstile, clientIp, isBot } = require('./_lib/turnstile');
+const { MAX_FIELD_LENGTH, MAX_TEXT_LENGTH, checkLengths } = require('./_lib/validate');
 
 module.exports = async function handler(req, res) {
     // Only accept POST requests
@@ -11,10 +13,23 @@ module.exports = async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed.' });
     }
 
+    // Honeypot: a hidden field no human can see or tab into. Report success
+    // so the bot has no signal to adapt against, but send nothing.
+    if (isBot(req.body)) {
+        return res.status(200).json({ success: true });
+    }
+
     // Validate required env vars — fail fast with a clear server-side error
-    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FORM_TO_EMAIL || !process.env.CONTACT_FORM_FROM_EMAIL) {
+    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FORM_TO_EMAIL || !process.env.CONTACT_FORM_FROM_EMAIL || !process.env.TURNSTILE_SECRET_KEY) {
         console.error('send-contact: Missing required environment variable(s).');
         return res.status(500).json({ error: 'Server configuration error. Please contact us directly.' });
+    }
+
+    // Verify the Turnstile token before doing any work. Checked server-side
+    // because the widget alone proves nothing — anyone can POST directly.
+    const verified = await verifyTurnstile(req.body?.turnstileToken, clientIp(req));
+    if (!verified) {
+        return res.status(403).json({ error: 'Verification failed. Please refresh the page and try again.' });
     }
 
     // Validate request body
@@ -29,6 +44,17 @@ module.exports = async function handler(req, res) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
+
+    // Bound every field — the browser's maxlength means nothing to a direct POST
+    const tooLong = checkLengths([
+        { label: 'Name',    value: name,    max: MAX_FIELD_LENGTH },
+        { label: 'Email',   value: email,   max: MAX_FIELD_LENGTH },
+        { label: 'Subject', value: subject, max: MAX_FIELD_LENGTH },
+        { label: 'Message', value: message, max: MAX_TEXT_LENGTH  },
+    ]);
+    if (tooLong) {
+        return res.status(400).json({ error: tooLong });
     }
 
     // Send the email via Resend

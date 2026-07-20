@@ -22,3 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .claude
+
+# editor / tooling output
+.VSCodeCounter
+.vercel
+.env*

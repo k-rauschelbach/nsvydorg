@@ -12,12 +12,17 @@ import { IconEye, IconEyeOff } from '../../components/Icons/Icons';
 // Shares the same visual style as AddMemberForm — no separate CSS needed
 import styles from './AddMemberForm.module.css';
 
+// Kept in step with MIN_PASSWORD_LENGTH in api/create-user.js. Firebase's own
+// floor is 6, so this check is what holds a self-service change to the same
+// bar an officer-created account starts at.
+const MIN_PASSWORD_LENGTH = 10;
+
 // Map Firebase error codes to user-friendly messages.
 const PASSWORD_ERRORS = {
     'auth/wrong-password':         'Current password is incorrect.',
     'auth/invalid-credential':     'Current password is incorrect.',
     'auth/too-many-requests':      'Too many failed attempts. Please try again later.',
-    'auth/weak-password':          'New password must be at least 6 characters.',
+    'auth/weak-password':          `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
     'auth/requires-recent-login':  'Please sign out and sign back in, then try again.',
     'auth/network-request-failed': 'Network error. Please check your connection and try again.',
 };
@@ -40,8 +45,8 @@ function UpdatePasswordForm() {
         setError('');
         setSuccess('');
 
-        if (newPw.length < 6) {
-            setError('New password must be at least 6 characters.');
+        if (newPw.length < MIN_PASSWORD_LENGTH) {
+            setError(`New password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
             return;
         }
         if (newPw !== confirmPw) {
@@ -115,7 +120,7 @@ function UpdatePasswordForm() {
                         <input
                             type={showNew ? 'text' : 'password'}
                             id="update-new-password"
-                            placeholder="Min. 6 characters"
+                            placeholder={`Min. ${MIN_PASSWORD_LENGTH} characters`}
                             value={newPw}
                             onChange={e => setNewPw(e.target.value)}
                             autoComplete="new-password"

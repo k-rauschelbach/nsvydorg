@@ -7,6 +7,11 @@ import { useAuth } from '../../context/AuthContext';
 import { IconEye, IconEyeOff, IconClose } from '../../components/Icons/Icons';
 import styles from './AddMemberForm.module.css';
 
+// Kept in step with MIN_PASSWORD_LENGTH in api/create-user.js, which is the
+// check that actually enforces this — the server rejects a short password
+// even if this one is bypassed.
+const MIN_PASSWORD_LENGTH = 10;
+
 function AddMemberForm({ isOpen, onClose }) {
     const { currentUser } = useAuth();
 
@@ -69,8 +74,8 @@ function AddMemberForm({ isOpen, onClose }) {
 
         const displayName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
-        if (password.length < 6) {
-            setError('Password must be at least 6 characters.');
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
             return;
         }
 
@@ -200,7 +205,7 @@ function AddMemberForm({ isOpen, onClose }) {
                                 <input
                                     type={showPw ? 'text' : 'password'}
                                     id="new-member-password"
-                                    placeholder="Min. 6 characters"
+                                    placeholder={`Min. ${MIN_PASSWORD_LENGTH} characters`}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     autoComplete="new-password"

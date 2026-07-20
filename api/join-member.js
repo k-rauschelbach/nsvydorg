@@ -7,16 +7,32 @@
 //APPS_SCRIPT_URL for existing sheet
 
 const {Resend} = require('resend')
+const { verifyTurnstile, clientIp, isBot } = require('./_lib/turnstile');
+const { MAX_FIELD_LENGTH, MAX_TEXT_LENGTH, checkLengths, checkList } = require('./_lib/validate');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({error: 'Method not allowed."'}); //POST only enforcement
     }
 
+    // Honeypot: a hidden field no human can see or tab into. Report success
+    // so the bot has no signal to adapt against, but write and send nothing.
+    if (isBot(req.body)) {
+        return res.status(200).json({success: true});
+    }
+
     //check for required env vars
-    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FORM_FROM_EMAIL || !process.env.CONTACT_FORM_TO_EMAIL || !process.env.APPS_SCRIPT_URL) {
+    if (!process.env.RESEND_API_KEY || !process.env.CONTACT_FORM_FROM_EMAIL || !process.env.CONTACT_FORM_TO_EMAIL || !process.env.APPS_SCRIPT_URL || !process.env.TURNSTILE_SECRET_KEY) {
         console.error('join-member: Missing required environment variable(s).');
         return res.status(500).json({error: 'Server configuration error. Please contact us directly.'});
+    }
+
+    // Verify Turnstile before touching the sheet or sending mail. Checked
+    // server-side because the widget alone proves nothing — anyone can POST
+    // directly to this endpoint.
+    const verified = await verifyTurnstile(req.body?.turnstileToken, clientIp(req));
+    if (!verified) {
+        return res.status(403).json({error: 'Verification failed. Please refresh the page and try again.'});
     }
 
     const {
@@ -32,6 +48,26 @@ module.exports = async function handler(req, res) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({error: 'Please enter a valid email address.'});
+    }
+
+    // Bound every field — the browser's maxlength means nothing to a direct POST
+    const tooLong = checkLengths([
+        { label: 'Name',       value: name,       max: MAX_FIELD_LENGTH },
+        { label: 'Date of birth', value: dob,     max: MAX_FIELD_LENGTH },
+        { label: 'Email',      value: email,      max: MAX_FIELD_LENGTH },
+        { label: 'Phone',      value: phone,      max: MAX_FIELD_LENGTH },
+        { label: 'Locality',   value: locality,   max: MAX_FIELD_LENGTH },
+        { label: 'Registration status', value: registered, max: MAX_FIELD_LENGTH },
+        { label: 'Skills',     value: skills,     max: MAX_TEXT_LENGTH  },
+        { label: 'Issues',     value: issues,     max: MAX_TEXT_LENGTH  },
+    ]);
+    if (tooLong) {
+        return res.status(400).json({error: tooLong});
+    }
+
+    const badList = checkList('Availability', availability);
+    if (badList) {
+        return res.status(400).json({error: badList});
     }
     
     // data structure for submission to google sheet, creation of timestamp

@@ -11,6 +11,7 @@
 //     are NEVER sent to the browser.
 
 const admin = require('firebase-admin');
+const { MAX_FIELD_LENGTH, checkLengths } = require('./_lib/validate');
 
 // Lazy singleton — initialise once, reuse across warm invocations.
 if (!admin.apps.length) {
@@ -24,11 +25,17 @@ if (!admin.apps.length) {
     });
 }
 
+// Minimum password length. Firebase itself only enforces 6; these accounts
+// can create other officer accounts, so we hold them to a higher bar.
+// Mirrored in AddMemberForm.js and UpdatePasswordForm.js — the client checks
+// are for fast feedback, this one is the check that actually binds.
+const MIN_PASSWORD_LENGTH = 10;
+
 // Map Firebase Admin error codes to user-friendly messages.
 const FRIENDLY_ERRORS = {
     'auth/email-already-exists': 'A member with that email address already exists.',
     'auth/invalid-email':        'Please enter a valid email address.',
-    'auth/invalid-password':     'Password must be at least 6 characters.',
+    'auth/invalid-password':     `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
 };
 
 module.exports = async function handler(req, res) {
@@ -59,6 +66,19 @@ module.exports = async function handler(req, res) {
     const { email, password, displayName, role } = req.body ?? {};
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required.' });
+    }
+    if (typeof password !== 'string' || password.length < MIN_PASSWORD_LENGTH) {
+        return res.status(400).json({
+            error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
+        });
+    }
+
+    const tooLong = checkLengths([
+        { label: 'Email',        value: email,       max: MAX_FIELD_LENGTH },
+        { label: 'Display name', value: displayName, max: MAX_FIELD_LENGTH },
+    ]);
+    if (tooLong) {
+        return res.status(400).json({ error: tooLong });
     }
 
     // Create the new Firebase Authentication user
