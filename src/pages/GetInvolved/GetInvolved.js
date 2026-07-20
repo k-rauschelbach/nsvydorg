@@ -198,26 +198,18 @@ function GetInvolved() {
     // one ref per unfold panel so opening a card can scroll the user to it
     const panelRefs = useRef({});
 
+    // Marks the top of the panel stack. Only one panel is ever open and the
+    // rest collapse to zero height, so whichever one unfolds, its top lands
+    // here -- a point that never moves. Scrolling to this anchor instead of to
+    // the panel itself avoids aiming at the still-collapsing layout, which sent
+    // the page to the bottom before correcting back up.
+    const panelAnchorRef = useRef(null);
+
     function togglePanel(action) {
         const next = activePanel === action ? null : action;
         setActivePanel(next);
         if (next) {
-            // On phones the cards stack, so the panel unfolds screens below the
-            // tapped card -- scroll to it. Three passes because (a) mid-unfold
-            // the browser clamps scrolls to the not-yet-full page height, and
-            // (b) systems with animations disabled silently ignore smooth
-            // scrolling, so the last pass snaps instantly if we never arrived.
-            const nudge = (behavior) => {
-                const el = panelRefs.current[next];
-                if (!el) return;
-                const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
-                if (Math.abs(el.getBoundingClientRect().top - margin) > 10) {
-                    el.scrollIntoView({ behavior, block: 'start' });
-                }
-            };
-            setTimeout(() => nudge('smooth'), 50);
-            setTimeout(() => nudge('smooth'), 600);
-            setTimeout(() => nudge('auto'), 1100);
+            panelAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
@@ -229,6 +221,7 @@ function GetInvolved() {
     // its own single-use token.
     const [joinToken, setJoinToken] = useState(null);
     const joinTurnstileRef = useRef(null);
+    const [joinConsent, setJoinConsent] = useState(false);
 
     // ======> meetings panel <======
     const [meetingGroups, setMeetingGroups] = useState([]);
@@ -302,6 +295,7 @@ function GetInvolved() {
             if (res.ok) {
                 setJoinStatus('success');
                 setJoinData(EMPTY_JOIN);
+                setJoinConsent(false);
                 setActivePanel(null);
             } else {
                 setJoinStatus('error');
@@ -354,6 +348,9 @@ function GetInvolved() {
                     </div>
                 </div>
             </section>
+
+            {/* Scroll target for every unfolding panel -- see panelAnchorRef */}
+            <div ref={panelAnchorRef} className={styles.panelAnchor} aria-hidden="true" />
 
             {/* Membership form -- unfolds when action card is selected */}
             <div ref={el => (panelRefs.current.join = el)}
@@ -556,11 +553,18 @@ function GetInvolved() {
                                         onVerify={setJoinToken}
                                         onExpire={() => setJoinToken(null)}
                                     />
-
+                                    <div className={styles.consentNote}>
+                                        <p className={styles.consentText}>We take security of your information very seriously. We encrypt your submission in transit and in storage, with access control limited to our officer team. We do not share this data with any third party.</p>
+                                        <input type="checkbox" id="consentCheckbox" name="consent"
+                                               checked={joinConsent}
+                                               onChange={(e) => setJoinConsent(e.target.checked)}
+                                               required/>
+                                        <label htmlFor="consentCheckbox">I consent to share the above information with NSVYD</label>
+                                    </div>
                                     <button
                                         type={"submit"}
                                         className={styles.submitBtn}
-                                        disabled={joinStatus === 'submitting'}
+                                        disabled={joinStatus === 'submitting' || !joinConsent}
                                         >
                                         {joinStatus === 'submitting' ? 'Submitting...' : 'Join NSVYD!'}
                                     </button>
@@ -573,7 +577,7 @@ function GetInvolved() {
                 </section>
             </div>
 
-            {/* Attend a Meeting panel -- unfolds when action card is selected */}
+            {/* #region Attend a meeting */}
             <div ref={el => (panelRefs.current.meetings = el)}
                  className={`${styles.joinFormWrap} ${activePanel === 'meetings' ? styles.meetingsFormOpen : ''}`}>
                 <section className={styles.meetingsSection}>

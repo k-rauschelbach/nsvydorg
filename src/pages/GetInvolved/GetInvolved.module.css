@@ -108,12 +108,16 @@
     overflow: hidden;
     max-height: 0;
     transition: max-height 500ms ease;
-    /* Keeps the panel top clear of the fixed header when scrolled into view */
+}
+
+/* Zero-height marker at the top of the panel stack -- the scroll target when a
+   panel unfolds. The margin keeps the panel top clear of the fixed header. */
+.panelAnchor {
     scroll-margin-top: 124px;
 }
 
 @media (max-width: 700px) {
-    .joinFormWrap {
+    .panelAnchor {
         scroll-margin-top: 84px;
     }
 }
@@ -565,6 +569,20 @@
     margin: 0 0 var(--space-sm);
 }
 
+
+/* Consent notice above the join form's consent checkbox */
+.consentNote {
+    border-top: 1px solid var(--color-gray-300);
+    border-bottom: 1px solid var(--color-gray-300);
+    padding: var(--space-sm) 0;
+    margin: var(--space-sm) 0;
+}
+
+.consentText {
+    font-size: var(--font-size-sm);
+    opacity: 0.6;
+    margin: 0 0 var(--space-xs);
+}
 
 /* Contact form -- narrower than full content width for readability */
 .form {
